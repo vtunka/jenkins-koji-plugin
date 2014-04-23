@@ -54,10 +54,9 @@ public class KojiBuilder extends Builder {
         // This is where you 'build' the project.
 
         // This also shows how you can consult the global configuration of the builder
-        if (getDescriptor().getUseFrench())
-            listener.getLogger().println("Bonjour, "+name+"!");
-        else
-            listener.getLogger().println("Hello, "+name+"!");
+        listener.getLogger().println("This is the selected Koji Instance: " + getDescriptor().getKojiInstanceURL());
+        listener.getLogger().println("This is the selected Koji Build: " + kojiBuild);
+
         return true;
     }
 
@@ -86,7 +85,7 @@ public class KojiBuilder extends Builder {
          * <p>
          * If you don't want fields to be persisted, use <tt>transient</tt>.
          */
-        private boolean useFrench;
+        private String kojiInstanceURL;
 
         /**
          * In order to load the persisted global configuration, you have to 
@@ -129,7 +128,7 @@ public class KojiBuilder extends Builder {
         public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
             // To persist global configuration information,
             // set that to properties and call save().
-            useFrench = formData.getBoolean("useFrench");
+            kojiInstanceURL = formData.getString("kojiInstanceURL");
             // ^Can also use req.bindJSON(this, formData);
             //  (easier when there are many fields; need set* methods for this, like setUseFrench)
             save();
@@ -142,8 +141,8 @@ public class KojiBuilder extends Builder {
          * The method name is bit awkward because global.jelly calls this method to determine
          * the initial state of the checkbox by the naming convention.
          */
-        public boolean getUseFrench() {
-            return useFrench;
+        public String getKojiInstanceURL() {
+            return kojiInstanceURL;
         }
     }
 }
