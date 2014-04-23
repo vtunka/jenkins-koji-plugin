@@ -121,7 +121,7 @@ public class KojiBuilder extends Builder {
          * This human readable name is used in the configuration screen.
          */
         public String getDisplayName() {
-            return "Say hello world";
+            return "Koji integration";
         }
 
         @Override
