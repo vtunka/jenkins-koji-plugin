@@ -23,7 +23,7 @@ import java.io.IOException;
  * {@link DescriptorImpl#newInstance(StaplerRequest)} is invoked
  * and a new {@link KojiBuilder} is created. The created
  * instance is persisted to the project configuration XML by using
- * XStream, so this allows you to use instance fields (like {@link #name})
+ * XStream, so this allows you to use instance fields (like {@link #kojiBuild})
  * to remember the configuration.
  *
  * <p>
@@ -34,25 +34,24 @@ import java.io.IOException;
  */
 public class KojiBuilder extends Builder {
 
-    private final String name;
+    private final String kojiBuild;
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
-    public KojiBuilder(String name) {
-        this.name = name;
+    public KojiBuilder(String kojiBuild) {
+        this.kojiBuild = kojiBuild;
     }
 
     /**
      * We'll use this from the <tt>config.jelly</tt>.
      */
-    public String getName() {
-        return name;
+    public String getKojiBuild() {
+        return kojiBuild;
     }
 
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
         // This is where you 'build' the project.
-        // Since this is a dummy, we just say 'hello world' and call that a build.
 
         // This also shows how you can consult the global configuration of the builder
         if (getDescriptor().getUseFrench())
@@ -98,19 +97,19 @@ public class KojiBuilder extends Builder {
         }
 
         /**
-         * Performs on-the-fly validation of the form field 'name'.
+         * Performs on-the-fly validation of the form field 'kojiBuild'.
          *
          * @param value
          *      This parameter receives the value that the user has typed.
          * @return
          *      Indicates the outcome of the validation. This is sent to the browser.
          */
-        public FormValidation doCheckName(@QueryParameter String value)
+        public FormValidation doCheckKojiBuild(@QueryParameter String value)
                 throws IOException, ServletException {
             if (value.length() == 0)
-                return FormValidation.error("Please set a name");
+                return FormValidation.error("Please set a Koji build");
             if (value.length() < 4)
-                return FormValidation.warning("Isn't the name too short?");
+                return FormValidation.warning("Isn't the Koji build coordinate too short?");
             return FormValidation.ok();
         }
 
