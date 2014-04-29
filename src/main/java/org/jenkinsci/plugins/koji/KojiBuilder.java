@@ -8,12 +8,20 @@ import hudson.model.AbstractProject;
 import hudson.tasks.Builder;
 import hudson.tasks.BuildStepDescriptor;
 import net.sf.json.JSONObject;
+import org.apache.xmlrpc.XmlRpcException;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.QueryParameter;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.apache.xmlrpc.client.XmlRpcClient;
+import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
+import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
+
 
 /**
  * Sample {@link Builder}.
@@ -28,13 +36,15 @@ import java.io.IOException;
  *
  * <p>
  * When a build is performed, the {@link #perform(AbstractBuild, Launcher, BuildListener)}
- * method will be invoked. 
+ * method will be invoked.
  *
  * @author Vaclav Tunka
  */
 public class KojiBuilder extends Builder {
 
     private final String kojiBuild;
+    private BuildListener listener;
+    private XmlRpcClient koji;
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
@@ -51,13 +61,49 @@ public class KojiBuilder extends Builder {
 
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
-        // This is where you 'build' the project.
+        this.listener = listener;
 
-        // This also shows how you can consult the global configuration of the builder
-        listener.getLogger().println("This is the selected Koji Instance: " + getDescriptor().getKojiInstanceURL());
-        listener.getLogger().println("This is the selected Koji Build: " + kojiBuild);
+        printDebugInfo();
+
+        XmlRpcClient koji = connect();
+        this.koji = koji;
+
+        sayHello();
+
 
         return true;
+    }
+
+    private void sayHello() {
+        try {
+            Object result = koji.execute("hello", new Object[] {"Hello"});
+            listener.getLogger().println("Jenkins-Koji Plugin: Hello Koji server running at " + getDescriptor().getKojiInstanceURL());
+            listener.getLogger().println("Koji: " + result);
+        } catch (XmlRpcException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private XmlRpcClient connect() {
+        String kojiInstanceURL = getDescriptor().getKojiInstanceURL();
+        XmlRpcClient koji = new XmlRpcClient();
+        koji.setTransportFactory(new XmlRpcCommonsTransportFactory(koji));
+        XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
+
+        try {
+          config.setServerURL(new URL(kojiInstanceURL));
+        } catch (MalformedURLException e) {
+          e.printStackTrace();
+        }
+
+        koji.setConfig(config);
+
+        return koji;
+    }
+
+    private void printDebugInfo() {
+        listener.getLogger().println("This is the selected Koji Instance: " + getDescriptor().getKojiInstanceURL());
+        listener.getLogger().println("This is the selected Koji Build: " + kojiBuild);
     }
 
     // Overridden for better type safety.
@@ -88,7 +134,7 @@ public class KojiBuilder extends Builder {
         private String kojiInstanceURL;
 
         /**
-         * In order to load the persisted global configuration, you have to 
+         * In order to load the persisted global configuration, you have to
          * call load() in the constructor.
          */
         public DescriptorImpl() {
@@ -113,7 +159,7 @@ public class KojiBuilder extends Builder {
         }
 
         public boolean isApplicable(Class<? extends AbstractProject> aClass) {
-            // Indicates that this builder can be used with all kinds of project types 
+            // Indicates that this builder can be used with all kinds of project types
             return true;
         }
 
