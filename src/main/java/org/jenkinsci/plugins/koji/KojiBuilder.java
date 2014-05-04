@@ -9,6 +9,8 @@ import hudson.tasks.Builder;
 import hudson.tasks.BuildStepDescriptor;
 import net.sf.json.JSONObject;
 import org.apache.xmlrpc.XmlRpcException;
+import org.apache.xmlrpc.client.MyTypeFactory;
+import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.QueryParameter;
@@ -20,7 +22,6 @@ import java.net.URL;
 
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
-import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
 
 
 /**
@@ -88,7 +89,10 @@ public class KojiBuilder extends Builder {
         String kojiInstanceURL = getDescriptor().getKojiInstanceURL();
         XmlRpcClient koji = new XmlRpcClient();
         koji.setTransportFactory(new XmlRpcCommonsTransportFactory(koji));
+        koji.setTypeFactory(new MyTypeFactory(koji));
         XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
+        config.setEnabledForExtensions(true);
+        config.setEnabledForExceptions(true);
 
         try {
           config.setServerURL(new URL(kojiInstanceURL));
