@@ -7,7 +7,7 @@
   </parent>
 
   <artifactId>koji</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.1-SNAPSHOT</version>
   <packaging>hpi</packaging>
   <name>Koji plugin</name>
   <description>Integrates Koji build system with Jenkins</description>
@@ -50,6 +50,12 @@
         <groupId>commons-httpclient</groupId>
         <artifactId>commons-httpclient</artifactId>
         <version>3.1</version>
+      </dependency>
+
+      <dependency>
+          <groupId>commons-codec</groupId>
+          <artifactId>commons-codec</artifactId>
+          <version>1.6</version>
       </dependency>
   </dependencies>
 
