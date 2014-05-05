@@ -48,9 +48,13 @@ public class KojiClient {
      * @return Array of properties for latest build.
      */
     public Object[] getLatestBuilds(String tag, String pkg) {
+        // Koji XML-RPC API
+        // getLatestBuilds(tag, event=None, package=None, type=None)
+        // description: List latest builds for tag (inheritance enabled)
 
         List<Object> params = new ArrayList<Object>();
         params.add(tag);
+        // Event is of no interest to us.
         params.add(null);
         params.add(pkg);
         try {
@@ -70,6 +74,34 @@ public class KojiClient {
      * @return A map containing all information about given build.
      */
     public Map<String, String> getBuildInfo(String buildId) {
+     /* XML-RPC method information
+        getBuild(buildInfo, strict=False)
+        description: Return information about a build.  buildID may be either
+        a int ID, a string NVR, or a map containing 'name', 'version'
+        and 'release.  A map will be returned containing the following
+        keys:
+        id: build ID
+        package_id: ID of the package built
+        package_name: name of the package built
+        version
+        release
+        epoch
+        nvr
+        state
+        task_id: ID of the task that kicked off the build
+        owner_id: ID of the user who kicked off the build
+        owner_name: name of the user who kicked off the build
+        volume_id: ID of the storage volume
+        volume_name: name of the storage volume
+        creation_event_id: id of the create_event
+        creation_time: time the build was created (text)
+        creation_ts: time the build was created (epoch)
+        completion_time: time the build was completed (may be null)
+        completion_ts: time the build was completed (epoch, may be null)
+
+        If there is no build matching the buildInfo given, and strict is specified,
+                raise an error.  Otherwise return None. */
+
         List<Object> params = new ArrayList<Object>();
         params.add(buildId);
         try {
