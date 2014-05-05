@@ -84,6 +84,22 @@ public class KojiClient {
     }
 
     /**
+     * Gets information about logged user.
+     * @return Session identification.
+     */
+    public String getSession() {
+        try {
+            String result = (String) koji.execute("showSession", new Object[] {});
+
+            System.out.println(result);
+
+            return result;
+        } catch (XmlRpcException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
      * Greet the remote Koji instance and test the communication.
      * @return
      */
