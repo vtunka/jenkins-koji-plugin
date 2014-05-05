@@ -12,6 +12,9 @@ import org.apache.xmlrpc.serializer.TypeSerializerImpl;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
+/**
+ * Custom TransportFactory handling extended XML-RPC specification allowing for null / None values.
+ */
 public class MyTypeFactory extends TypeFactoryImpl {
 
     public MyTypeFactory(XmlRpcController pController) {

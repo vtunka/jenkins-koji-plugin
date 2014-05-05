@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Used for XML-RPC communication with Koji.
+ * Singleton used for XML-RPC communication with Koji.
  */
 public class KojiClient {
 
@@ -30,6 +30,10 @@ public class KojiClient {
         this.koji = connect(kojiInstanceURL);
     }
 
+    /**
+     * Get the KojiClient Singleton instance.
+     * @param kojiInstanceURL URL of remote Koji instance.
+     */
     public static KojiClient getKojiClient(String kojiInstanceURL) {
         if (instance == null)
             instance = new KojiClient(kojiInstanceURL);
@@ -37,6 +41,12 @@ public class KojiClient {
         return instance;
     }
 
+    /**
+     * Gets latest builds.
+     * @param tag Koji tag
+     * @param pkg Koji package
+     * @return Array of properties for latest build.
+     */
     public Object[] getLatestBuilds(String tag, String pkg) {
 
         List<Object> params = new ArrayList<Object>();
@@ -54,9 +64,14 @@ public class KojiClient {
         return null;
     }
 
-    public Map<String, String> getBuildInfo(String buildNVR) {
+    /**
+     * Retrieves information about a given build.
+     * @param buildId BuildId can be Name-Version-Release (NVR) or numeric buildId.
+     * @return A map containing all information about given build.
+     */
+    public Map<String, String> getBuildInfo(String buildId) {
         List<Object> params = new ArrayList<Object>();
-        params.add(buildNVR);
+        params.add(buildId);
         try {
             Map<String, String> buildInfo = (Map<String, String>) koji.execute("getBuild", params);
 
@@ -68,6 +83,10 @@ public class KojiClient {
         return null;
     }
 
+    /**
+     * Greet the remote Koji instance and test the communication.
+     * @return
+     */
     public String sayHello() {
         StringBuilder sb = new StringBuilder();
         try {
@@ -83,6 +102,11 @@ public class KojiClient {
         return null;
     }
 
+    /**
+     * Connect to remote Koji instance. Uses custom Transport factory adding a None / null support for XML-RPC.
+     * @param kojiInstanceURL Address of the remote Koji server.
+     * @return XMLRPC client instance.
+     */
     private XmlRpcClient connect(String kojiInstanceURL) {
         XmlRpcClient koji = new XmlRpcClient();
         koji.setTransportFactory(new XmlRpcCommonsTransportFactory(koji));
