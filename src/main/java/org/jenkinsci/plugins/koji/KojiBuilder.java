@@ -1,27 +1,21 @@
 package org.jenkinsci.plugins.koji;
-import hudson.Launcher;
+
 import hudson.Extension;
-import hudson.util.FormValidation;
+import hudson.Launcher;
 import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
 import hudson.model.AbstractProject;
-import hudson.tasks.Builder;
+import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
+import hudson.tasks.Builder;
+import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
-import org.apache.xmlrpc.XmlRpcException;
-import org.apache.xmlrpc.client.MyTypeFactory;
-import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.StaplerRequest;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import org.apache.xmlrpc.client.XmlRpcClient;
-import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
+import java.util.Map;
 
 
 /**
@@ -45,7 +39,7 @@ public class KojiBuilder extends Builder {
 
     private final String kojiBuild;
     private BuildListener listener;
-    private XmlRpcClient koji;
+    private KojiClient koji;
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
@@ -66,43 +60,28 @@ public class KojiBuilder extends Builder {
 
         printDebugInfo();
 
-        XmlRpcClient koji = connect();
-        this.koji = koji;
+        this.koji = KojiClient.getKojiClient(getDescriptor().getKojiInstanceURL());
 
-        sayHello();
+        String hello = koji.sayHello();
+        listener.getLogger().println(hello);
 
+        Object[] result;
+        result = koji.getLatestBuilds("f21", "kernel");
+        for (Object object : result) {
+            listener.getLogger().println(object);
+        }
+
+        String buildNVR = "kernel-3.15.0-0.rc3.git5.3.fc21";
+        Map<String, String> buildInfo;
+        buildInfo = koji.getBuildInfo(buildNVR);
+        for (Map.Entry<String, String> entry : buildInfo.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            listener.getLogger().println(key + ": " + value);
+        }
 
         return true;
-    }
-
-    private void sayHello() {
-        try {
-            Object result = koji.execute("hello", new Object[] {"Hello"});
-            listener.getLogger().println("Jenkins-Koji Plugin: Hello Koji server running at " + getDescriptor().getKojiInstanceURL());
-            listener.getLogger().println("Koji: " + result);
-        } catch (XmlRpcException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private XmlRpcClient connect() {
-        String kojiInstanceURL = getDescriptor().getKojiInstanceURL();
-        XmlRpcClient koji = new XmlRpcClient();
-        koji.setTransportFactory(new XmlRpcCommonsTransportFactory(koji));
-        koji.setTypeFactory(new MyTypeFactory(koji));
-        XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-        config.setEnabledForExtensions(true);
-        config.setEnabledForExceptions(true);
-
-        try {
-          config.setServerURL(new URL(kojiInstanceURL));
-        } catch (MalformedURLException e) {
-          e.printStackTrace();
-        }
-
-        koji.setConfig(config);
-
-        return koji;
     }
 
     private void printDebugInfo() {
