@@ -10,19 +10,25 @@ public class XMLRPCTest {
         String kojiInstanceURL = "http://koji.fedoraproject.org/kojihub";
 
         XMLRPCTest kojiTest = new XMLRPCTest(kojiInstanceURL);
-        kojiTest.test();
+        kojiTest.executeTests();
     }
 
-    public void test() {
+    public void executeTests() {
+        testKojiHello();
+
+//        koji.getSession();
+//
+//        testGetLatestBuilds();
+//
+//        testGeBuildInfo();
+    }
+
+    private void testKojiHello() {
         String hello = koji.sayHello();
         System.out.println(hello);
+    }
 
-        Object[] result;
-        result = koji.getLatestBuilds("f21", "kernel");
-        for (Object object : result) {
-            System.out.println(object);
-        }
-
+    private void testGeBuildInfo() {
         String build = "kernel-3.15.0-0.rc3.git5.3.fc21";
         Map<String, String> buildInfo;
         buildInfo = koji.getBuildInfo(build);
@@ -31,6 +37,14 @@ public class XMLRPCTest {
             Object value = entry.getValue();
 
             System.out.println(key + ": " + value);
+        }
+    }
+
+    private void testGetLatestBuilds() {
+        Object[] result;
+        result = koji.getLatestBuilds("f21", "kernel");
+        for (Object object : result) {
+            System.out.println(object);
         }
     }
 
