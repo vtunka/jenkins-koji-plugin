@@ -1,7 +1,7 @@
 package org.jenkinsci.plugins.koji;
 
 import org.apache.xmlrpc.XmlRpcException;
-import org.apache.xmlrpc.client.MyTypeFactory;
+import org.jenkinsci.plugins.koji.xmlrpc.MyTypeFactory;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
@@ -132,6 +132,99 @@ public class KojiClient {
 
         return null;
     }
+    /**
+     * Holds Koji Build parameters. Use BuildParamsBuilder for initialization.
+     */
+    static class BuildParams {
+        private final String id;
+        private final String tag;
+        private final boolean latest;
+        private final String pkg;
+        private final String owner;
+        private final String type;
+
+        BuildParams(String id, String tag, boolean latest, String pkg, String owner, String type) {
+            this.id = id;
+
+            this.tag = tag;
+            this.latest = latest;
+            this.pkg = pkg;
+            this.owner = owner;
+            this.type = type;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getTag() {
+            return tag;
+        }
+
+        public boolean isLatest() {
+            return latest;
+        }
+
+        public String getPkg() {
+            return pkg;
+        }
+
+        public String getOwner() {
+            return owner;
+        }
+
+        public String getType() {
+            return type;
+        }
+    }
+
+    /**
+     * Builder instance for BuildParams providing default values.
+     */
+    static class BuildParamsBuilder {
+        private String id = null;
+        private String tag = null;
+        private boolean latest = false;
+        private String pkg = null;
+        private String owner = null;
+        private String type = null;
+
+        BuildParamsBuilder setId(String id) {
+            this.id = id;
+            return this;
+        }
+
+        BuildParamsBuilder setTag(String tag) {
+            this.tag = tag;
+            return this;
+        }
+
+        BuildParamsBuilder setLatest(boolean latest) {
+            this.latest = latest;
+            return this;
+        }
+
+        BuildParamsBuilder setPackage(String pkg) {
+            this.pkg = pkg;
+            return this;
+        }
+
+        BuildParamsBuilder setOwner(String owner) {
+            this.owner = owner;
+            return this;
+        }
+
+        BuildParamsBuilder setType(String type) {
+            this.type = type;
+            return this;
+        }
+
+        BuildParams build() {
+            return new BuildParams(id, tag, latest, pkg, owner, type);
+        }
+    }
+
+    /**
      * Greet the remote Koji instance and test the communication.
      * @return
      */
