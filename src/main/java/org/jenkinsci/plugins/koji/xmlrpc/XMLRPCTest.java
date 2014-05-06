@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.koji;
+package org.jenkinsci.plugins.koji.xmlrpc;
 
 import java.util.Map;
 
@@ -15,6 +15,9 @@ public class XMLRPCTest {
 
     public void executeTests() {
         testKojiHello();
+
+        KojiClient.BuildParams buildParams = new KojiClient.BuildParamsBuilder().setTag("f21").setPackage("kernel").setLatest(true).build();
+        koji.listTaggedBuilds(buildParams);
 
 //        koji.getSession();
 //

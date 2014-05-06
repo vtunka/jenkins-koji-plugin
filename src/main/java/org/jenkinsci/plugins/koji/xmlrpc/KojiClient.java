@@ -1,7 +1,6 @@
-package org.jenkinsci.plugins.koji;
+package org.jenkinsci.plugins.koji.xmlrpc;
 
 import org.apache.xmlrpc.XmlRpcException;
-import org.jenkinsci.plugins.koji.xmlrpc.MyTypeFactory;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
@@ -150,7 +149,7 @@ public class KojiClient {
         params.add(buildParams.getType());
 
         try {
-            koji.execute("listTagged", params);
+            Object[] results = (Object[]) koji.execute("listTagged", params);
             for (Object result : results)
                 System.out.println(results);
 

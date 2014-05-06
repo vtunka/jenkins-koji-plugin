@@ -1,4 +1,4 @@
-package org.apache.xmlrpc.client;
+package org.jenkinsci.plugins.koji.xmlrpc;
 
 import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.apache.xmlrpc.common.TypeFactoryImpl;
