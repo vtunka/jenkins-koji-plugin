@@ -132,6 +132,36 @@ public class KojiClient {
 
         return null;
     }
+
+    public void listTaggedBuilds(BuildParams buildParams) {
+        // Koji XML-RPC API
+        // listTagged(tag, event=None, inherit=False, prefix=None, latest=False, package=None, owner=None, type=None)
+        // description: List builds tagged with tag
+
+        List<Object> params = new ArrayList<Object>();
+        params.add(buildParams.getTag());
+        // Event is of no interest to us.
+        params.add(null);
+        params.add(false);
+        params.add(null);
+        params.add(buildParams.isLatest());
+        params.add(buildParams.getPkg());
+        params.add(buildParams.getOwner());
+        params.add(buildParams.getType());
+
+        try {
+            koji.execute("listTagged", params);
+            for (Object result : results)
+                System.out.println(results);
+
+//            return buildInfo;
+        } catch (XmlRpcException e) {
+            e.printStackTrace();
+        }
+
+//        return null;
+    }
+
     /**
      * Holds Koji Build parameters. Use BuildParamsBuilder for initialization.
      */
