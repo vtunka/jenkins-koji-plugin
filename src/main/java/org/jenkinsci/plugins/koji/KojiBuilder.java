@@ -160,19 +160,19 @@ public class KojiBuilder extends Builder {
         }
 
         /**
-         * Performs on-the-fly validation of the form field 'kojiBuild'.
+         * Performs on-the-fly validation of the form field 'kojiInstanceURL'.
          *
          * @param value
          *      This parameter receives the value that the user has typed.
          * @return
          *      Indicates the outcome of the validation. This is sent to the browser.
          */
-        public FormValidation doCheckKojiBuild(@QueryParameter String value)
+        public FormValidation doCheckKojiInstanceURL(@QueryParameter String value)
                 throws IOException, ServletException {
             if (value.length() == 0)
-                return FormValidation.error("Please set a Koji build");
+                return FormValidation.error("Please set a Koji instance URL");
             if (value.length() < 4)
-                return FormValidation.warning("Isn't the Koji build coordinate too short?");
+                return FormValidation.warning("Isn't the Koji instance URL too short?");
             return FormValidation.ok();
         }
 
