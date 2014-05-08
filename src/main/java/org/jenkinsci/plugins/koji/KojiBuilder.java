@@ -156,6 +156,7 @@ public class KojiBuilder extends Builder {
          * call load() in the constructor.
          */
         public DescriptorImpl() {
+            super(KojiBuilder.class);
             load();
         }
 
@@ -200,14 +201,14 @@ public class KojiBuilder extends Builder {
         }
 
         /**
-         * This method returns true if the global configuration says we should speak French.
-         *
-         * The method name is bit awkward because global.jelly calls this method to determine
-         * the initial state of the checkbox by the naming convention.
+         * Get Koji Instance URL.
          */
         public String getKojiInstanceURL() {
             return kojiInstanceURL;
         }
+
+        public void setKojiInstanceURL(String kojiInstanceURL) { this.kojiInstanceURL = kojiInstanceURL; }
+
     }
 }
 

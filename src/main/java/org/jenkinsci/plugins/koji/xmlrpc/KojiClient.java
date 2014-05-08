@@ -36,6 +36,12 @@ public class KojiClient {
     public static KojiClient getKojiClient(String kojiInstanceURL) {
         if (instance == null)
             instance = new KojiClient(kojiInstanceURL);
+        else {
+            if (instance.getKojiInstanceURL() != kojiInstanceURL) {
+                instance = new KojiClient(kojiInstanceURL);
+                // TODO: won't it be more efficient to only call setServerURL?
+            }
+        }
 
         return instance;
     }
