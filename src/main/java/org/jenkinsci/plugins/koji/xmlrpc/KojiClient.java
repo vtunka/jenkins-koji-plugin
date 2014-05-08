@@ -46,7 +46,7 @@ public class KojiClient {
      * @param pkg Koji package
      * @return Array of properties for latest build.
      */
-    public Object[] getLatestBuilds(String tag, String pkg) {
+    public Object[] getLatestBuilds(String tag, String pkg) throws XmlRpcException {
         // Koji XML-RPC API
         // getLatestBuilds(tag, event=None, package=None, type=None)
         // description: List latest builds for tag (inheritance enabled)
@@ -56,15 +56,19 @@ public class KojiClient {
         // Event is of no interest to us.
         params.add(null);
         params.add(pkg);
-        try {
-            Object[] latestBuilds = (Object[]) koji.execute("getLatestBuilds", params);
 
-            return latestBuilds;
+        Object[] latestBuilds = null;
+        try {
+            latestBuilds = (Object[]) koji.execute("getLatestBuilds", params);
         } catch (XmlRpcException e) {
-            e.printStackTrace();
+            throw e;
         }
 
-        return null;
+        if (latestBuilds == null) {
+            throw new XmlRpcException("empty");
+        }
+
+        return latestBuilds;
     }
 
     /**
@@ -72,7 +76,7 @@ public class KojiClient {
      * @param buildId BuildId can be Name-Version-Release (NVR) or numeric buildId.
      * @return A map containing all information about given build.
      */
-    public Map<String, String> getBuildInfo(String buildId) {
+    public Map<String, String> getBuildInfo(String buildId) throws XmlRpcException {
      /* XML-RPC method information
         getBuild(buildInfo, strict=False)
         description: Return information about a build.  buildID may be either
@@ -103,15 +107,20 @@ public class KojiClient {
 
         List<Object> params = new ArrayList<Object>();
         params.add(buildId);
-        try {
-            Map<String, String> buildInfo = (Map<String, String>) koji.execute("getBuild", params);
+        Map<String, String> buildInfo;
 
-            return buildInfo;
+        try {
+            buildInfo = (Map<String, String>) koji.execute("getBuild", params);
         } catch (XmlRpcException e) {
-            e.printStackTrace();
+            throw e;
         }
 
-        return null;
+        if (buildInfo == null) {
+            throw new XmlRpcException("empty");
+        }
+
+        return buildInfo;
+
     }
 
     /**
@@ -119,17 +128,14 @@ public class KojiClient {
      * @return Session identification.
      */
     public String getSession() {
+        String result = null;
         try {
-            String result = (String) koji.execute("showSession", new Object[] {});
-
-            System.out.println(result);
-
-            return result;
+            result = (String) koji.execute("showSession", new Object[] {});
         } catch (XmlRpcException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return result;
     }
 
     public void listTaggedBuilds(BuildParams buildParams) {

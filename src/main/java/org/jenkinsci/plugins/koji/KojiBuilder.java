@@ -9,6 +9,7 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
+import org.apache.xmlrpc.XmlRpcException;
 import org.jenkinsci.plugins.koji.xmlrpc.KojiClient;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -57,32 +58,65 @@ public class KojiBuilder extends Builder {
 
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
-        this.listener = listener;
-
-        printDebugInfo();
-
-        this.koji = KojiClient.getKojiClient(getDescriptor().getKojiInstanceURL());
+//        printDebugInfo();
+        init(listener);
 
         String hello = koji.sayHello();
         listener.getLogger().println(hello);
 
-        Object[] result;
-        result = koji.getLatestBuilds("f21", "kernel");
+        String pkg = "kernel";
+        String tag = "f21";
+        getLatestBuilds(pkg, tag);
+
+        String buildId = "kernel-3.15.0-0.rc3.git5.3.fc21";
+        getBuildInfo(buildId);
+
+        return true;
+    }
+
+    private void getLatestBuilds(String pkg, String tag) {
+        Object[] result = null;
+
+        try {
+            result = koji.getLatestBuilds(tag, pkg);
+        } catch (XmlRpcException e) {
+            if (e.getMessage() == "empty") {
+                listener.getLogger().println("No package " + pkg + " found for tag " + tag);
+                return;
+            }
+            else {
+                listener.getLogger().println(e.getMessage());
+                return;
+            }
+        }
         for (Object object : result) {
             listener.getLogger().println(object);
         }
+    }
 
-        String buildNVR = "kernel-3.15.0-0.rc3.git5.3.fc21";
-        Map<String, String> buildInfo;
-        buildInfo = koji.getBuildInfo(buildNVR);
+    private void getBuildInfo(String build) {
+        Map<String, String> buildInfo = null;
+        try {
+            buildInfo = koji.getBuildInfo(build);
+        } catch (XmlRpcException e) {
+            if (e.getMessage() == "empty") {
+                listener.getLogger().println("No build with id=" + build + " found in the database.");
+                return;
+            }
+            else
+                e.printStackTrace();
+        }
         for (Map.Entry<String, String> entry : buildInfo.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
 
             listener.getLogger().println(key + ": " + value);
         }
+    }
 
-        return true;
+    private void init(BuildListener listener) {
+        this.listener = listener;
+        this.koji = KojiClient.getKojiClient(getDescriptor().getKojiInstanceURL());
     }
 
     private void printDebugInfo() {
