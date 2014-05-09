@@ -75,7 +75,7 @@ public class KojiBuilder extends Builder {
     }
 
     private void getLatestBuilds(String pkg, String tag) {
-        Object[] result = null;
+        Map<String, String> result = null;
 
         try {
             result = koji.getLatestBuilds(tag, pkg);
@@ -89,8 +89,11 @@ public class KojiBuilder extends Builder {
                 return;
             }
         }
-        for (Object object : result) {
-            listener.getLogger().println(object);
+        for (Map.Entry<String, String> entry : result.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            listener.getLogger().println(key + ": " + value);
         }
     }
 

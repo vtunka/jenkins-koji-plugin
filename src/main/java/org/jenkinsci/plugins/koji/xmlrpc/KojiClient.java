@@ -50,9 +50,9 @@ public class KojiClient {
      * Gets latest builds.
      * @param tag Koji tag
      * @param pkg Koji package
-     * @return Array of properties for latest build.
+     * @return Map of properties for latest build.
      */
-    public Object[] getLatestBuilds(String tag, String pkg) throws XmlRpcException {
+    public Map<String, String> getLatestBuilds(String tag, String pkg) throws XmlRpcException {
         // Koji XML-RPC API
         // getLatestBuilds(tag, event=None, package=None, type=None)
         // description: List latest builds for tag (inheritance enabled)
@@ -64,17 +64,21 @@ public class KojiClient {
         params.add(pkg);
 
         Object[] latestBuilds = null;
+        Map<String, String> buildInfo = null;
         try {
             latestBuilds = (Object[]) koji.execute("getLatestBuilds", params);
+            buildInfo = (Map<String, String>) latestBuilds[0];
         } catch (XmlRpcException e) {
             throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         if (latestBuilds == null) {
             throw new XmlRpcException("empty");
         }
 
-        return latestBuilds;
+        return buildInfo;
     }
 
     /**

@@ -62,7 +62,7 @@ public class XMLRPCTest {
     }
 
     private void testGetLatestBuilds() {
-        Object[] result = null;
+        Map<String, String> result = null;
 
         try {
             result = koji.getLatestBuilds(tag, pkg);
@@ -76,8 +76,11 @@ public class XMLRPCTest {
                 return;
             }
         }
-        for (Object object : result) {
-            System.out.println(object);
+        for (Map.Entry<String, String> entry : result.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            System.out.println(key + ": " + value);
         }
     }
 
