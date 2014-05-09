@@ -308,4 +308,11 @@ public class KojiClient {
 
         return koji;
     }
+
+    public void setDebug(boolean debug) {
+        if (debug)
+            koji.setTransportFactory(new MyXmlRpcCommonsTransportFactory(koji));
+        else
+            koji.setTransportFactory(new XmlRpcCommonsTransportFactory(koji));
+    }
 }
