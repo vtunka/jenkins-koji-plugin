@@ -19,7 +19,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.xmlrpc.XmlRpcException;
 import org.slf4j.Logger;
 
-public class CustomLoggingUtils {
+public class MyLoggingUtils {
 
     public static void logRequest(Logger logger,
                                   RequestEntity requestEntity) throws XmlRpcException {
@@ -41,11 +41,11 @@ public class CustomLoggingUtils {
         logger.debug(toPrettyXml(logger, content));
     }
 
-    public static String logResponse(Logger logger, InputStream istream)
+    public static String logResponse(Logger logger, InputStream stream)
             throws XmlRpcException {
         BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new InputStreamReader(istream));
+            reader = new BufferedReader(new InputStreamReader(stream));
             String line = null;
             StringBuilder respBuf = new StringBuilder();
             while ((line = reader.readLine()) != null) {

@@ -11,12 +11,12 @@ import org.apache.xmlrpc.client.XmlRpcTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CustomXmlRpcCommonsTransportFactory extends
+public class MyXmlRpcCommonsTransportFactory extends
         XmlRpcCommonsTransportFactory {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public CustomXmlRpcCommonsTransportFactory(XmlRpcClient pClient) {
+    public MyXmlRpcCommonsTransportFactory(XmlRpcClient pClient) {
         super(pClient);
     }
 
@@ -27,7 +27,7 @@ public class CustomXmlRpcCommonsTransportFactory extends
 
     private class LoggingTransport extends XmlRpcCommonsTransport {
 
-        public LoggingTransport(CustomXmlRpcCommonsTransportFactory pFactory) {
+        public LoggingTransport(MyXmlRpcCommonsTransportFactory pFactory) {
             super(pFactory);
         }
 
@@ -38,7 +38,7 @@ public class CustomXmlRpcCommonsTransportFactory extends
         protected void writeRequest(final ReqWriter pWriter) throws XmlRpcException {
             super.writeRequest(pWriter);
             if (logger.isDebugEnabled()) {
-                CustomLoggingUtils.logRequest(logger, method.getRequestEntity());
+                MyLoggingUtils.logRequest(logger, method.getRequestEntity());
             }
         }
 
@@ -51,7 +51,7 @@ public class CustomXmlRpcCommonsTransportFactory extends
             InputStream istream = super.getInputStream();
             if (logger.isDebugEnabled()) {
                 return new ByteArrayInputStream(
-                        CustomLoggingUtils.logResponse(logger, istream).getBytes());
+                        MyLoggingUtils.logResponse(logger, istream).getBytes());
             } else {
                 return istream;
             }
