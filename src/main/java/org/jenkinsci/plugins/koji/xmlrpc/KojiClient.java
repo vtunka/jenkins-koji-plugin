@@ -161,9 +161,15 @@ public class KojiClient {
         params.add(buildParams.getType());
 
         try {
-            Object[] results = (Object[]) koji.execute("listTagged", params);
-            for (Object result : results)
-                System.out.println(results);
+            Object[] objects = (Object[]) koji.execute("listTagged", params);
+            for (Object o : objects) {
+                Map<String, String> map = (Map<String, String>) o;
+                for (Map.Entry<String, String> m : map.entrySet()) {
+                    String key = m.getKey();
+                    Object value = m.getValue();
+                    System.out.println(key + ": " + value);
+                }
+            }
 
 //            return buildInfo;
         } catch (XmlRpcException e) {
