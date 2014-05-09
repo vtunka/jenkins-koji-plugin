@@ -4,11 +4,16 @@ import org.apache.log4j.*;
 import org.apache.xmlrpc.XmlRpcException;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Map;
 
 public class XMLRPCTest {
 
     private KojiClient koji;
+
+    private final String build = "classworlds-classworlds-1.1_alpha_2-1";
+    private final String pkg = "classworlds-classworlds";
+    private final String tag = "mead-import-maven-all";
 
     public static void main(String[] args) {
 //        String kojiInstanceURL = "http://koji.fedoraproject.org/kojihub";
@@ -21,14 +26,14 @@ public class XMLRPCTest {
     public void executeTests() {
         testKojiHello();
 
-//        KojiClient.BuildParams buildParams = new KojiClient.BuildParamsBuilder().setTag("f21").setPackage("kernel").setLatest(true).build();
-//        koji.listTaggedBuilds(buildParams);
+        KojiClient.BuildParams buildParams = new KojiClient.BuildParamsBuilder().setTag(tag).setPackage(pkg).setLatest(true).build();
+        koji.listTaggedBuilds(buildParams);
 
-        System.out.println(koji.getSession());
-
-        testGetLatestBuilds();
-
-        testGeBuildInfo();
+//        System.out.println(koji.getSession());
+//
+//        testGetLatestBuilds();
+//
+//        testGeBuildInfo();
     }
 
     private void testKojiHello() {
@@ -37,7 +42,6 @@ public class XMLRPCTest {
     }
 
     private void testGeBuildInfo() {
-        String build = "kernel-3.15.0-0.rc3.git5.3.fc21";
         Map<String, String> buildInfo = null;
         try {
             buildInfo = koji.getBuildInfo(build);
@@ -59,8 +63,6 @@ public class XMLRPCTest {
 
     private void testGetLatestBuilds() {
         Object[] result = null;
-        String pkg = "kernel";
-        String tag = "f21";
 
         try {
             result = koji.getLatestBuilds(tag, pkg);
