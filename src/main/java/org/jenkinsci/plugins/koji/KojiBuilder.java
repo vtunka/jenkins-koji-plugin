@@ -61,6 +61,8 @@ public class KojiBuilder extends Builder {
 //        printDebugInfo();
         init(listener);
 
+        KojiLauncher kojiLauncher = new KojiLauncher(build, launcher, listener);
+        kojiLauncher.callKoji();
         String hello = koji.sayHello();
         listener.getLogger().println(hello);
 
