@@ -26,6 +26,7 @@ public class XMLRPCTest {
     public void executeTests() {
         testKojiHello();
 
+        testLogin();
         KojiClient.BuildParams buildParams = new KojiClient.BuildParamsBuilder().setTag(tag).setPackage(pkg).setLatest(true).build();
         koji.listTaggedBuilds(buildParams);
 
@@ -34,6 +35,21 @@ public class XMLRPCTest {
 //        testGetLatestBuilds();
 //
 //        testGeBuildInfo();
+
+    private void testLogin() {
+        Map<String, ?> session = null;
+        try {
+            session = koji.login();
+        } catch (XmlRpcException e) {
+            e.printStackTrace();
+        }
+
+//        printMap(session);
+//        Integer sessionId = (Integer) session.get("session-id");
+
+        System.out.println(koji.getSession());
+
+    }
     }
 
     private void testKojiHello() {

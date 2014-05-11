@@ -47,6 +47,21 @@ public class KojiClient {
         return instance;
     }
 
+    public Map<String, ?> login() throws XmlRpcException {
+        List<Object> params = new ArrayList<Object>();
+        params.add("test");
+        params.add("test");
+
+        Map<String, String> session = null;
+
+        try {
+            session = (Map<String, String>) koji.execute("login", params);
+        } catch (XmlRpcException e) {
+            throw e;
+        }
+
+        return session;
+    }
     /**
      * Gets latest builds.
      *
