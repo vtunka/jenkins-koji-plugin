@@ -155,6 +155,10 @@ public class KojiBuilder extends Builder {
          * If you don't want fields to be persisted, use <tt>transient</tt>.
          */
         private String kojiInstanceURL;
+        private String authentication;
+        private String kojiUsername;
+        private String kojiPassword;
+        private String sslCertificatePath;
 
         /**
          * In order to load the persisted global configuration, you have to
@@ -199,6 +203,10 @@ public class KojiBuilder extends Builder {
             // To persist global configuration information,
             // set that to properties and call save().
             kojiInstanceURL = formData.getString("kojiInstanceURL");
+            authentication = formData.getString("authentication");
+            kojiUsername = formData.getString("kojiUsername");
+            kojiPassword = formData.getString("kojiPassword");
+            sslCertificatePath = formData.getString("sslCertificatePath");
             // ^Can also use req.bindJSON(this, formData);
             //  (easier when there are many fields; need set* methods for this, like setUseFrench)
             save();
@@ -212,8 +220,41 @@ public class KojiBuilder extends Builder {
             return kojiInstanceURL;
         }
 
-        public void setKojiInstanceURL(String kojiInstanceURL) { this.kojiInstanceURL = kojiInstanceURL; }
+        public void setKojiInstanceURL(String kojiInstanceURL) {
+            this.kojiInstanceURL = kojiInstanceURL;
+        }
 
+        public String getAuthentication() {
+            return authentication;
+        }
+
+        public void setAuthentication(String authentication) {
+            this.authentication = authentication;
+        }
+
+        public String getKojiUsername() {
+            return kojiUsername;
+        }
+
+        public void setKojiUsername(String kojiUsername) {
+            this.kojiUsername = kojiUsername;
+        }
+
+        public String getKojiPassword() {
+            return kojiPassword;
+        }
+
+        public void setKojiPassword(String kojiPassword) {
+            this.kojiPassword = kojiPassword;
+        }
+
+        public String getSslCertificatePath() {
+            return sslCertificatePath;
+        }
+
+        public void setSslCertificatePath(String sslCertificatePath) {
+            this.sslCertificatePath = sslCertificatePath;
+        }
     }
 }
 
