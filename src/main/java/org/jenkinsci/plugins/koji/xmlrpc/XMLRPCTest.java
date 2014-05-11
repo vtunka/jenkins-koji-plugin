@@ -5,6 +5,7 @@ import org.apache.xmlrpc.XmlRpcException;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 public class XMLRPCTest {
@@ -55,6 +56,27 @@ public class XMLRPCTest {
     private void testKojiHello() {
         String hello = koji.sayHello();
         System.out.println(hello);
+    }
+
+    private void testListTaggedBuilds() {
+
+        KojiClient.BuildParams buildParams = new KojiClient.BuildParamsBuilder().setTag(tag).setPackage(pkg).setLatest(true).build();
+        List<Map<String, String>> results = null;
+        try {
+            results = koji.listTaggedBuilds(buildParams);
+        } catch (XmlRpcException e) {
+            if (e.getMessage() == "empty") {
+                System.out.println("No build with id=" + build + " found in the database.");
+                return;
+            }
+            else
+                e.printStackTrace();
+        }
+
+        for (Map<String, String> map : results) {
+            printMap(map);
+        }
+
     }
 
     private void testGeBuildInfo() {

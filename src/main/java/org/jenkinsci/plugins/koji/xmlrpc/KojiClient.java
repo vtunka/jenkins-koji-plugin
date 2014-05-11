@@ -8,6 +8,7 @@ import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -167,7 +168,11 @@ public class KojiClient {
         return result;
     }
 
-    public void listTaggedBuilds(BuildParams buildParams) {
+    /**
+     * Method for detailed queries.
+     * @param buildParams Accepts BuildParams object holding various properties.
+     */
+    public List<Map<String, String>> listTaggedBuilds(BuildParams buildParams) throws XmlRpcException {
         // Koji XML-RPC API
         // listTagged(tag, event=None, inherit=False, prefix=None, latest=False, package=None, owner=None, type=None)
         // description: List builds tagged with tag
@@ -183,23 +188,26 @@ public class KojiClient {
         params.add(buildParams.getOwner());
         params.add(buildParams.getType());
 
-        try {
-            Object[] objects = (Object[]) koji.execute("listTagged", params);
-            for (Object o : objects) {
-                Map<String, String> map = (Map<String, String>) o;
-                for (Map.Entry<String, String> m : map.entrySet()) {
-                    String key = m.getKey();
-                    Object value = m.getValue();
-                    System.out.println(key + ": " + value);
-                }
-            }
+        Object[] objects = null;
 
-//            return buildInfo;
+        try {
+            objects = (Object[]) koji.execute("listTagged", params);
         } catch (XmlRpcException e) {
-            e.printStackTrace();
+            throw e;
         }
 
-//        return null;
+        if (objects == null) {
+            throw new XmlRpcException("empty");
+        }
+
+        List<Map<String, String>> results = new LinkedList<Map<String, String>>();
+
+        for (Object o : objects) {
+            Map<String, String> map = (Map<String, String>) o;
+            results.add(map);
+        }
+
+        return results;
     }
 
     /**
