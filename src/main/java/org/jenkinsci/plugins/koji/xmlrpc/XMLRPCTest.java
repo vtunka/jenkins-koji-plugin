@@ -51,6 +51,13 @@ public class XMLRPCTest {
         System.out.println(koji.getSession());
 
     }
+
+    public static void printMap(Map<String, String> map) {
+        for (Map.Entry<String, String> m : map.entrySet()) {
+            String key = m.getKey();
+            Object value = m.getValue();
+            System.out.println(key + ": " + value);
+        }
     }
 
     private void testKojiHello() {
@@ -91,12 +98,7 @@ public class XMLRPCTest {
             else
                 e.printStackTrace();
         }
-        for (Map.Entry<String, String> entry : buildInfo.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
-
-            System.out.println(key + ": " + value);
-        }
+        printMap(buildInfo);
     }
 
     private void testGetLatestBuilds() {
@@ -114,12 +116,7 @@ public class XMLRPCTest {
                 return;
             }
         }
-        for (Map.Entry<String, String> entry : result.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
-
-            System.out.println(key + ": " + value);
-        }
+        printMap(result);
     }
 
     public XMLRPCTest(String kojiInstanceURL) {
