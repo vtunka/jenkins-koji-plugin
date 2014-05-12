@@ -48,6 +48,8 @@ public class KojiBuilder extends Builder {
     private final String kojiOptions;
     private final String kojiTask;
 
+    private transient BuildListener listener;
+    private transient KojiClient koji;
     private BuildListener listener;
     private KojiClient koji;
 
