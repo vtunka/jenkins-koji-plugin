@@ -15,5 +15,25 @@
         <f:textbox/>
     </f:entry>
 
+    <f:entry title="Koji package" field="kojiPackage">
+        <f:textbox/>
+    </f:entry>
+
+    <f:entry title="Koji target" field="kojiTarget">
+        <f:textbox/>
+    </f:entry>
+
+    <f:entry title="Other options" field="kojiOptions">
+        <f:textbox/>
+    </f:entry>
+
+    <f:entry name="kojiTask" title="Choose task for Koji instance" field="kojiTask">
+        <select name="kojiTask">
+            <option value="mavenBuild">Run a new maven build</option>
+            <option value="download">Download build</option>
+            <option value="listLatest">List latest package</option>
+        </select>
+    </f:entry>
+
 
 </j:jelly>

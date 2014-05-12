@@ -1,19 +1,22 @@
 package org.jenkinsci.plugins.koji;
 
+import hudson.DescriptorExtensionList;
 import hudson.Extension;
+import hudson.ExtensionPoint;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.BuildListener;
+import hudson.model.*;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
+import hudson.util.XStream2;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.apache.xmlrpc.XmlRpcException;
 import org.jenkinsci.plugins.koji.xmlrpc.KojiClient;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -40,20 +43,42 @@ import java.util.Map;
 public class KojiBuilder extends Builder {
 
     private final String kojiBuild;
+    private final String kojiTarget;
+    private final String kojiPackage;
+    private final String kojiOptions;
+    private final String kojiTask;
+
     private BuildListener listener;
     private KojiClient koji;
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
-    public KojiBuilder(String kojiBuild) {
+    public KojiBuilder(String kojiBuild, String kojiTarget, String kojiPackage, String kojiOptions, String kojiTask) {
         this.kojiBuild = kojiBuild;
+        this.kojiTarget = kojiTarget;
+        this.kojiPackage = kojiPackage;
+        this.kojiOptions = kojiOptions;
+        this.kojiTask = kojiTask;
     }
 
-    /**
-     * We'll use this from the <tt>config.jelly</tt>.
-     */
     public String getKojiBuild() {
         return kojiBuild;
+    }
+
+    public String getKojiTarget() {
+        return kojiTarget;
+    }
+
+    public String getKojiPackage() {
+        return kojiPackage;
+    }
+
+    public String getKojiOptions() {
+        return kojiOptions;
+    }
+
+    public String getKojiTask() {
+        return kojiTask;
     }
 
     @Override
