@@ -27,7 +27,7 @@
         <f:textbox/>
     </f:entry>
 
-    <f:entry name="kojiTask" title="Choose task for Koji instance" field="kojiTask">
+    <f:entry title="Choose task for Koji instance" field="kojiTask">
         <select name="kojiTask">
             <option value="mavenBuild">Run a new maven build</option>
             <option value="download">Download build</option>

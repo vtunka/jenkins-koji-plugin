@@ -18,7 +18,7 @@
             <f:textbox/>
         </f:entry>
 
-        <f:entry name="authentication" title="Choose authentication for Koji instance" field="authentication">
+        <f:entry title="Choose authentication for Koji instance" field="authentication">
             <select name="authentication">
                 <option value="plain">Username / Password</option>
                 <option value="openSSL">OpenSSL</option>

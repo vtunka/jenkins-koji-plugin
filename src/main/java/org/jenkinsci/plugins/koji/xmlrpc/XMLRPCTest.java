@@ -36,6 +36,7 @@ public class XMLRPCTest {
 //        testGetLatestBuilds();
 //
 //        testGeBuildInfo();
+    }
 
     private void testLogin() {
         Map<String, ?> session = null;
