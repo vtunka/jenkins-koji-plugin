@@ -10,7 +10,7 @@ import java.io.IOException;
 public class KojiLauncher {
 
     private final String workspacePath;
-    private final String[] command;
+    private String[] command;
 
     private final AbstractBuild<?,?> build;
     private final BuildListener listener;
@@ -22,7 +22,6 @@ public class KojiLauncher {
         this.launcher = launcher;
 
         workspacePath = initWorkspacePath();
-        command = constructCommand();
     }
 
     private String initWorkspacePath() {
@@ -42,8 +41,16 @@ public class KojiLauncher {
         return workspace;
     }
 
-    private String[] constructCommand() {
-        return new String[]{"koji", "moshimoshi"};
+    void moshiMoshiCommand() {
+        command =  new String[]{"koji", "moshimoshi"};
+    }
+
+    void mavenBuildCommand(String options, String target, String sources) {
+        command =  new String[]{"koji", "maven-build", "-Dmaven.test.skip=true", options, target, sources};
+    }
+
+    void watchTaskCommand(String taskId) {
+        command =  new String[]{"koji", "watch-task", taskId};
     }
 
     public boolean callKoji() {
