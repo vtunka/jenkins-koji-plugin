@@ -42,7 +42,7 @@ public class KojiBuilder extends Builder {
     private final String kojiTarget;
     private final String kojiPackage;
     private final String kojiOptions;
-    private static String kojiTask = "mavenBuild";
+    private static String kojiTask;
     private boolean kojiScratchBuild;
     private final String kojiScmUrl;
 
@@ -273,6 +273,15 @@ public class KojiBuilder extends Builder {
         }
 
         public ListBoxModel doFillKojiTaskItems(){
+            if (kojiTask == null) {
+                return new ListBoxModel(
+                        new ListBoxModel.Option("Run a new maven build", "mavenBuild", false),
+                        new ListBoxModel.Option("Download maven build", "download" , false),
+                        new ListBoxModel.Option("List latest build for package", "listLatest", false),
+                        new ListBoxModel.Option("Koji moshimoshi (validate client configuration)", "moshimoshi", true)
+                );
+
+            }
             return new ListBoxModel(
                     new ListBoxModel.Option("Run a new maven build", "mavenBuild", kojiTask.equals("mavenBuild")),
                     new ListBoxModel.Option("Download maven build", "download" , kojiTask.equals("download")),
