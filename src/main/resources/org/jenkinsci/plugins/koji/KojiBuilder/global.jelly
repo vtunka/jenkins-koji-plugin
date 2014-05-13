@@ -18,20 +18,34 @@
             <f:textbox/>
         </f:entry>
 
+
         <f:entry title="Choose authentication for Koji instance" field="authentication">
-            <f:select />
+            <f:select/>
         </f:entry>
 
-        <f:entry title="Koji Username (plain authentication)" field="kojiUsername">
-            <f:textbox/>
-        </f:entry>
+        <f:nested>
+            <table style="width:100%">
+                <f:section title="Plain authentication">
+                    <f:block>
+                        <f:entry title="Koji Username" field="kojiUsername">
+                            <f:textbox/>
+                        </f:entry>
 
-        <f:entry title="Koji Password (plain authentication)" field="kojiPassword">
-            <f:password/>
-        </f:entry>
+                        <f:entry title="Koji Password" field="kojiPassword">
+                            <f:password/>
+                        </f:entry>
+                    </f:block>
+                </f:section>
 
-        <f:entry title="Path to SSL certificate for Koji authentication" field="sslCertificatePath">
-            <f:textbox/>
-        </f:entry>
+                <f:section title="Plain authentication">
+                    <f:block>
+                        <f:entry title="Path to SSL certificate for Koji authentication" field="sslCertificatePath">
+                            <f:textbox/>
+                        </f:entry>
+                    </f:block>
+                </f:section>
+            </table>
+        </f:nested>
+
     </f:section>
 </j:jelly>
