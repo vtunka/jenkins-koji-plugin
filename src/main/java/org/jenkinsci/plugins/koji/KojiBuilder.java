@@ -264,7 +264,13 @@ public class KojiBuilder extends Builder {
          * @return
          */
         public ListBoxModel doFillAuthenticationItems(){
-
+            if (authentication == null) {
+                return new ListBoxModel(
+                        new ListBoxModel.Option("Username / Password", "plain", true),
+                        new ListBoxModel.Option("OpenSSL", "openSSL", false),
+                        new ListBoxModel.Option("Kerberos (TBD)", "kerberos", false)
+                );
+            }
             return new ListBoxModel(
                     new ListBoxModel.Option("Username / Password", "plain", authentication.equals("plain")),
                     new ListBoxModel.Option("OpenSSL", "openSSL", authentication.equals("openSSL")),
