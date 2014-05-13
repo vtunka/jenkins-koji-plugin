@@ -51,6 +51,7 @@ public class KojiBuilder extends Builder {
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
+    @SuppressWarnings("UnusedDeclaration")
     public KojiBuilder(String kojiBuild, String kojiTarget, String kojiPackage, String kojiOptions, String kojiTask, boolean scratchBuild) {
         this.kojiBuild = kojiBuild;
         this.kojiTarget = kojiTarget;
@@ -60,22 +61,27 @@ public class KojiBuilder extends Builder {
         this.scratchBuild = scratchBuild;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public String getKojiBuild() {
         return kojiBuild;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public String getKojiTarget() {
         return kojiTarget;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public String getKojiPackage() {
         return kojiPackage;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public String getKojiOptions() {
         return kojiOptions;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public String getKojiTask() {
         return kojiTask;
     }
@@ -275,6 +281,7 @@ public class KojiBuilder extends Builder {
             this.kojiInstanceURL = kojiInstanceURL;
         }
 
+        @SuppressWarnings("UnusedDeclaration")
         public String getAuthentication() {
             return authentication;
         }
@@ -283,6 +290,7 @@ public class KojiBuilder extends Builder {
             this.authentication = authentication;
         }
 
+        @SuppressWarnings("UnusedDeclaration")
         public String getKojiUsername() {
             return kojiUsername;
         }
@@ -291,6 +299,7 @@ public class KojiBuilder extends Builder {
             this.kojiUsername = kojiUsername;
         }
 
+        @SuppressWarnings("UnusedDeclaration")
         public String getKojiPassword() {
             return kojiPassword;
         }
@@ -299,6 +308,7 @@ public class KojiBuilder extends Builder {
             this.kojiPassword = kojiPassword;
         }
 
+        @SuppressWarnings("UnusedDeclaration")
         public String getSslCertificatePath() {
             return sslCertificatePath;
         }
