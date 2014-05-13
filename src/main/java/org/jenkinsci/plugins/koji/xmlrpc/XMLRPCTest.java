@@ -29,7 +29,7 @@ public class XMLRPCTest {
 
         testLogin();
         KojiClient.BuildParams buildParams = new KojiClient.BuildParamsBuilder().setTag(tag).setPackage(pkg).setLatest(true).build();
-        koji.listTaggedBuilds(buildParams);
+//        koji.listTaggedBuilds(buildParams);
 
 //        System.out.println(koji.getSession());
 //

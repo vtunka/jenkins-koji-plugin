@@ -273,7 +273,7 @@ public class KojiBuilder extends Builder {
         public ListBoxModel doFillKojiTaskItems(){
             return new ListBoxModel(
                     new ListBoxModel.Option("Run a new maven build", "mavenBuild", kojiTask.equals("mavenBuild")),
-                    new ListBoxModel.Option("Download build", "download" , kojiTask.equals("download")),
+                    new ListBoxModel.Option("Download maven build", "download" , kojiTask.equals("download")),
                     new ListBoxModel.Option("List latest build for package", "listLatest", kojiTask.equals("listLatest")),
                     new ListBoxModel.Option("Koji moshimoshi (validate client configuration)", "moshimoshi", kojiTask.equals("moshimoshi"))
             );

@@ -54,7 +54,7 @@ public class KojiLauncher {
     }
 
     void downloadCommand(String kojiBuild) {
-        command =  new String[]{"koji", "download-build", kojiBuild};
+        command =  new String[]{"koji", "download-build", "--type=maven", kojiBuild};
     }
 
     public boolean callKoji() {
