@@ -1,22 +1,18 @@
 package org.jenkinsci.plugins.koji;
 
-import hudson.DescriptorExtensionList;
 import hudson.Extension;
-import hudson.ExtensionPoint;
 import hudson.Launcher;
 import hudson.model.*;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
-import hudson.util.XStream2;
-import jenkins.model.Jenkins;
+import hudson.util.ListBoxModel;
 import net.sf.json.JSONObject;
 import org.apache.xmlrpc.XmlRpcException;
 import org.jenkinsci.plugins.koji.xmlrpc.KojiClient;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -46,21 +42,22 @@ public class KojiBuilder extends Builder {
     private final String kojiTarget;
     private final String kojiPackage;
     private final String kojiOptions;
-    private final String kojiTask;
+    private static String kojiTask = "mavenBuild";
+
+    private final boolean scratchBuild;
 
     private transient BuildListener listener;
     private transient KojiClient koji;
-    private BuildListener listener;
-    private KojiClient koji;
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
-    public KojiBuilder(String kojiBuild, String kojiTarget, String kojiPackage, String kojiOptions, String kojiTask) {
+    public KojiBuilder(String kojiBuild, String kojiTarget, String kojiPackage, String kojiOptions, String kojiTask, boolean scratchBuild) {
         this.kojiBuild = kojiBuild;
         this.kojiTarget = kojiTarget;
         this.kojiPackage = kojiPackage;
         this.kojiOptions = kojiOptions;
         this.kojiTask = kojiTask;
+        this.scratchBuild = scratchBuild;
     }
 
     public String getKojiBuild() {
@@ -81,6 +78,10 @@ public class KojiBuilder extends Builder {
 
     public String getKojiTask() {
         return kojiTask;
+    }
+
+    public boolean getScratchBuild() {
+        return scratchBuild;
     }
 
     @Override
@@ -217,6 +218,26 @@ public class KojiBuilder extends Builder {
             // Indicates that this builder can be used with all kinds of project types
             return true;
         }
+
+        /**
+         * Fills the items for authentication for global configuration.
+         * @return
+         */
+        public ListBoxModel doFillAuthenticationItems(){
+
+            return new ListBoxModel(
+                    new ListBoxModel.Option("Username / Password", "plain", authentication.equals("plain")),
+                    new ListBoxModel.Option("OpenSSL", "openSSL", authentication.equals("openSSL")),
+                    new ListBoxModel.Option("Kerberos (TBD)", "kerberos", authentication.equals("kerberos")));
+        }
+
+        public ListBoxModel doFillKojiTaskItems(){
+            return new ListBoxModel(
+                    new ListBoxModel.Option("Run a new maven build", "mavenBuild", kojiTask.equals("mavenBuild")),
+                    new ListBoxModel.Option("Download build", "download" , kojiTask.equals("download")),
+                    new ListBoxModel.Option("List latest package", "listLatest", kojiTask.equals("listLatest")));
+        }
+
 
         /**
          * This human readable name is used in the configuration screen.

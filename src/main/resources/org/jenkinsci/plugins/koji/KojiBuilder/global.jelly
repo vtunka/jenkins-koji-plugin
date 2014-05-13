@@ -19,11 +19,7 @@
         </f:entry>
 
         <f:entry title="Choose authentication for Koji instance" field="authentication">
-            <select name="authentication">
-                <option value="plain">Username / Password</option>
-                <option value="openSSL">OpenSSL</option>
-                <option value="kerberos">Kerberos (TBD)</option>
-            </select>
+            <f:select />
         </f:entry>
 
         <f:entry title="Koji Username (plain authentication)" field="kojiUsername">

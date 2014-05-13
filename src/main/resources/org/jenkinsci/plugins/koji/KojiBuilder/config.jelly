@@ -28,11 +28,11 @@
     </f:entry>
 
     <f:entry title="Choose task for Koji instance" field="kojiTask">
-        <select name="kojiTask">
-            <option value="mavenBuild">Run a new maven build</option>
-            <option value="download">Download build</option>
-            <option value="listLatest">List latest package</option>
-        </select>
+        <f:select />
+    </f:entry>
+
+    <f:entry title="Scratch build" description="Check if you don't want this build to be tagged into Koji database">
+        <f:checkbox name="scratchBuild" checked="${descriptor.getScratchBuild()}" />
     </f:entry>
 
 
