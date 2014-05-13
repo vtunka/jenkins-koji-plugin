@@ -119,7 +119,7 @@ public class KojiBuilder extends Builder {
             kojiRunSucceeded = kojiLauncher.callKoji();
         } else if (kojiTask.equals("listLatest")) {
             listener.getLogger().println("\n[Koji integration] Listing latest build information for package " + kojiPackage + " in tag " + kojiTarget);
-            getLatestBuilds(kojiPackage, kojiTarget);
+            kojiRunSucceeded = getLatestBuilds(kojiPackage, kojiTarget);
         } else if (kojiTask.equals("moshimoshi")) {
             kojiLauncher.moshiMoshiCommand();
             kojiRunSucceeded = kojiLauncher.callKoji();
@@ -139,7 +139,7 @@ public class KojiBuilder extends Builder {
             return "";
     }
 
-    private void getLatestBuilds(String pkg, String tag) {
+    private boolean getLatestBuilds(String pkg, String tag) {
         Map<String, String> result = null;
 
         listener.getLogger().println("\n[Koji integration] Searching latest build for package " + pkg + " in tag " + tag);
@@ -148,11 +148,11 @@ public class KojiBuilder extends Builder {
         } catch (XmlRpcException e) {
             if (e.getMessage() == "empty") {
                 listener.getLogger().println("[Koji integration] No package " + pkg + " found for tag " + tag);
-                return;
+                return false;
             }
             else {
                 listener.getLogger().println(e.getMessage());
-                return;
+                return false;
             }
         }
         for (Map.Entry<String, String> entry : result.entrySet()) {
@@ -161,6 +161,8 @@ public class KojiBuilder extends Builder {
 
             listener.getLogger().println(key + ": " + value);
         }
+
+        return true;
     }
 
     private void getBuildInfo(String build) {
