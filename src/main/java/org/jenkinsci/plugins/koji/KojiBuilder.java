@@ -107,11 +107,12 @@ public class KojiBuilder extends Builder {
     private void getLatestBuilds(String pkg, String tag) {
         Map<String, String> result = null;
 
+        listener.getLogger().println("\n[Koji integration] Searching latest build for package " + pkg + " in tag " + tag);
         try {
             result = koji.getLatestBuilds(tag, pkg);
         } catch (XmlRpcException e) {
             if (e.getMessage() == "empty") {
-                listener.getLogger().println("No package " + pkg + " found for tag " + tag);
+                listener.getLogger().println("[Koji integration] No package " + pkg + " found for tag " + tag);
                 return;
             }
             else {
@@ -129,11 +130,13 @@ public class KojiBuilder extends Builder {
 
     private void getBuildInfo(String build) {
         Map<String, String> buildInfo = null;
+
+        listener.getLogger().println("\n[Koji integration] Searching for build information for " + build);
         try {
             buildInfo = koji.getBuildInfo(build);
         } catch (XmlRpcException e) {
             if (e.getMessage() == "empty") {
-                listener.getLogger().println("No build with id=" + build + " found in the database.");
+                listener.getLogger().println("[Koji integration] No build with id=" + build + " found in the database.");
                 return;
             }
             else

@@ -52,7 +52,7 @@ public class KojiLauncher {
         successfull = (workspacePath != null);
         if (!successfull) return successfull;
 
-        listener.getLogger().println("[Koji integration] Workspace path: " + workspacePath);
+//        listener.getLogger().println("[Koji integration] Workspace path: " + workspacePath);
 
         try {
             int exitCode = launcher.launch().cmds(command).envs(build.getEnvironment(listener)).pwd(build.getWorkspace()).stdout(listener).join();
