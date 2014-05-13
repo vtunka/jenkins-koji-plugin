@@ -105,30 +105,31 @@ public class KojiBuilder extends Builder {
 //        printDebugInfo();
         init(listener);
 
+        boolean kojiRunSucceeded = false;
         KojiLauncher kojiLauncher = new KojiLauncher(build, launcher, listener);
 
         if (kojiTask.equals("mavenBuild")) {
             listener.getLogger().println("\n[Koji integration] Running maven build build for package " + kojiPackage + " in tag " + kojiTarget);
             kojiLauncher.mavenBuildCommand(isScratchToString(), kojiTarget, kojiScmUrl);
-            kojiLauncher.callKoji();
+            kojiRunSucceeded = kojiLauncher.callKoji();
 
         } else if (kojiTask.equals("download")) {
             listener.getLogger().println("\n[Koji integration] Downloading artifacts for build " + kojiBuild);
             kojiLauncher.downloadCommand(kojiBuild);
-            kojiLauncher.callKoji();
+            kojiRunSucceeded = kojiLauncher.callKoji();
         } else if (kojiTask.equals("listLatest")) {
             listener.getLogger().println("\n[Koji integration] Listing latest build information for package " + kojiPackage + " in tag " + kojiTarget);
             getLatestBuilds(kojiPackage, kojiTarget);
         } else if (kojiTask.equals("moshimoshi")) {
             kojiLauncher.moshiMoshiCommand();
-            kojiLauncher.callKoji();
+            kojiRunSucceeded = kojiLauncher.callKoji();
         }
 
 //        listener.getLogger().println("\n[Koji integration] Watching task");
 //        kojiLauncher.watchTaskCommand("366");
 //        kojiLauncher.callKoji();
 
-        return true;
+        return kojiRunSucceeded;
     }
 
     private String isScratchToString() {
