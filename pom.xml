@@ -7,7 +7,7 @@
   </parent>
 
   <artifactId>koji</artifactId>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.1.1-SNAPSHOT</version>
   <packaging>hpi</packaging>
   <name>Koji plugin</name>
   <description>Integrates Koji build system with Jenkins</description>
