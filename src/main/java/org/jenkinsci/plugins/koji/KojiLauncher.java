@@ -53,6 +53,10 @@ public class KojiLauncher {
         command =  new String[]{"koji", "watch-task", taskId};
     }
 
+    void downloadCommand(String kojiBuild) {
+        command =  new String[]{"koji", "download-build", kojiBuild};
+    }
+
     public boolean callKoji() {
         boolean successfull = true;
 

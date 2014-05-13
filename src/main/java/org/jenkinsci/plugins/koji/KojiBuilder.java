@@ -43,8 +43,8 @@ public class KojiBuilder extends Builder {
     private final String kojiPackage;
     private final String kojiOptions;
     private static String kojiTask = "mavenBuild";
-
-    private final boolean scratchBuild;
+    private boolean kojiScratchBuild;
+    private final String kojiScmUrl;
 
     private transient BuildListener listener;
     private transient KojiClient koji;
@@ -52,13 +52,14 @@ public class KojiBuilder extends Builder {
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
     @SuppressWarnings("UnusedDeclaration")
-    public KojiBuilder(String kojiBuild, String kojiTarget, String kojiPackage, String kojiOptions, String kojiTask, boolean scratchBuild) {
+    public KojiBuilder(String kojiBuild, String kojiTarget, String kojiPackage, String kojiOptions, String kojiTask, boolean kojiScratchBuild, String kojiScmUrl) {
         this.kojiBuild = kojiBuild;
         this.kojiTarget = kojiTarget;
         this.kojiPackage = kojiPackage;
         this.kojiOptions = kojiOptions;
         this.kojiTask = kojiTask;
-        this.scratchBuild = scratchBuild;
+        this.kojiScmUrl = kojiScmUrl;
+        this.kojiScratchBuild = kojiScratchBuild;
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -86,8 +87,17 @@ public class KojiBuilder extends Builder {
         return kojiTask;
     }
 
-    public boolean getScratchBuild() {
-        return scratchBuild;
+    public boolean isKojiScratchBuild() {
+        return kojiScratchBuild;
+    }
+
+    public void setKojiScratchBuild(boolean kojiScratchBuild) {
+        this.kojiScratchBuild = kojiScratchBuild;
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public String getKojiScmUrl() {
+        return kojiScmUrl;
     }
 
     @Override
@@ -96,18 +106,36 @@ public class KojiBuilder extends Builder {
         init(listener);
 
         KojiLauncher kojiLauncher = new KojiLauncher(build, launcher, listener);
-        kojiLauncher.callKoji();
-        String hello = koji.sayHello();
-        listener.getLogger().println(hello);
 
-        String pkg = "kernel";
-        String tag = "f21";
-        getLatestBuilds(pkg, tag);
+        if (kojiTask.equals("mavenBuild")) {
+            listener.getLogger().println("\n[Koji integration] Running maven build build for package " + kojiPackage + " in tag " + kojiTarget);
+            kojiLauncher.mavenBuildCommand(isScratchToString(), kojiTarget, kojiScmUrl);
+            kojiLauncher.callKoji();
 
-        String buildId = "kernel-3.15.0-0.rc3.git5.3.fc21";
-        getBuildInfo(buildId);
+        } else if (kojiTask.equals("download")) {
+            listener.getLogger().println("\n[Koji integration] Downloading artifacts for build " + kojiBuild);
+            kojiLauncher.downloadCommand(kojiBuild);
+            kojiLauncher.callKoji();
+        } else if (kojiTask.equals("listLatest")) {
+            listener.getLogger().println("\n[Koji integration] Listing latest build information for package " + kojiPackage + " in tag " + kojiTarget);
+            getLatestBuilds(kojiPackage, kojiTarget);
+        } else if (kojiTask.equals("moshimoshi")) {
+            kojiLauncher.moshiMoshiCommand();
+            kojiLauncher.callKoji();
+        }
+
+//        listener.getLogger().println("\n[Koji integration] Watching task");
+//        kojiLauncher.watchTaskCommand("366");
+//        kojiLauncher.callKoji();
 
         return true;
+    }
+
+    private String isScratchToString() {
+        if (kojiScratchBuild) {
+            return "--scratch";
+        } else
+            return "";
     }
 
     private void getLatestBuilds(String pkg, String tag) {
@@ -237,14 +265,17 @@ public class KojiBuilder extends Builder {
             return new ListBoxModel(
                     new ListBoxModel.Option("Username / Password", "plain", authentication.equals("plain")),
                     new ListBoxModel.Option("OpenSSL", "openSSL", authentication.equals("openSSL")),
-                    new ListBoxModel.Option("Kerberos (TBD)", "kerberos", authentication.equals("kerberos")));
+                    new ListBoxModel.Option("Kerberos (TBD)", "kerberos", authentication.equals("kerberos"))
+            );
         }
 
         public ListBoxModel doFillKojiTaskItems(){
             return new ListBoxModel(
                     new ListBoxModel.Option("Run a new maven build", "mavenBuild", kojiTask.equals("mavenBuild")),
                     new ListBoxModel.Option("Download build", "download" , kojiTask.equals("download")),
-                    new ListBoxModel.Option("List latest package", "listLatest", kojiTask.equals("listLatest")));
+                    new ListBoxModel.Option("List latest build for package", "listLatest", kojiTask.equals("listLatest")),
+                    new ListBoxModel.Option("Koji moshimoshi (validate client configuration)", "moshimoshi", kojiTask.equals("moshimoshi"))
+            );
         }
 
 
