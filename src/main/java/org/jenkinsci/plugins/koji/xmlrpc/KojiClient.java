@@ -95,6 +95,12 @@ public class KojiClient {
         Map<String, String> buildInfo = null;
         try {
             latestBuilds = (Object[]) koji.execute("getLatestBuilds", params);
+            if (latestBuilds == null) {
+                throw new XmlRpcException("empty");
+            }
+            if (latestBuilds.length == 0) {
+                throw new XmlRpcException("empty");
+            }
             buildInfo = (Map<String, String>) latestBuilds[0];
         } catch (XmlRpcException e) {
             throw e;
@@ -102,9 +108,7 @@ public class KojiClient {
             e.printStackTrace();
         }
 
-        if (latestBuilds == null) {
-            throw new XmlRpcException("empty");
-        }
+
 
         return buildInfo;
     }
