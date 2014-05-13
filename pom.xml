@@ -19,9 +19,14 @@
     <developer>
       <id>vtunka</id>
       <name>Vaclav Tunka</name>
-      <email>vtunka (at) gmail (dot) com</email>
     </developer>
   </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/vtunka/jenkins-koji-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:vtunka/jenkins-koji-plugin.git</developerConnection>
+    <url>https://github.com/vtunka/jenkins-koji-plugin</url>
+  </scm>
 
   <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
   <repositories>
@@ -77,4 +82,4 @@
       </dependency>
   </dependencies>
 
- </project>
+</project>
