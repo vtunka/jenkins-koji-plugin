@@ -228,6 +228,19 @@ public class KojiBuilder extends Builder {
         private String kojiPassword;
         private String sslCertificatePath;
 
+        private transient ListBoxModel authModel = new ListBoxModel(
+                new ListBoxModel.Option("Username / Password", Authentication.plain.name()),
+                new ListBoxModel.Option("OpenSSL", Authentication.openSSL.name()),
+                new ListBoxModel.Option("Kerberos (TBD)", Authentication.kerberos.name())
+        );
+
+        private transient ListBoxModel kojiTaskModel = new ListBoxModel(
+                new ListBoxModel.Option("Koji moshimoshi (validate client configuration)", KojiTask.moshimoshi.name()),
+                new ListBoxModel.Option("Run a new maven build", KojiTask.mavenBuild.name()),
+                new ListBoxModel.Option("Download maven build", KojiTask.download.name()),
+                new ListBoxModel.Option("List latest build for package", KojiTask.listLatest.name())
+        );
+
         /**
          * In order to load the persisted global configuration, you have to
          * call load() in the constructor.
@@ -265,35 +278,39 @@ public class KojiBuilder extends Builder {
          */
         public ListBoxModel doFillAuthenticationItems(){
             if (authentication == null) {
-                return new ListBoxModel(
-                        new ListBoxModel.Option("Username / Password", "plain", true),
-                        new ListBoxModel.Option("OpenSSL", "openSSL", false),
-                        new ListBoxModel.Option("Kerberos (TBD)", "kerberos", false)
-                );
+                authModel.get(0).selected = true;
+                return authModel;
             }
-            return new ListBoxModel(
-                    new ListBoxModel.Option("Username / Password", "plain", authentication.equals("plain")),
-                    new ListBoxModel.Option("OpenSSL", "openSSL", authentication.equals("openSSL")),
-                    new ListBoxModel.Option("Kerberos (TBD)", "kerberos", authentication.equals("kerberos"))
-            );
+
+            for (ListBoxModel.Option option : authModel) {
+                if (option.name.equals(Authentication.plain.name()))
+                    option.selected = authentication.equals(Authentication.plain.name());
+                else if (option.name.equals(Authentication.openSSL.name()))
+                    option.selected = authentication.equals(Authentication.openSSL.name());
+                else if (option.name.equals(Authentication.kerberos.name()))
+                    option.selected = authentication.equals(Authentication.kerberos.name());
+            }
+
+            return authModel;
         }
 
+        /**
+         * Fills the Koji task options for project configurations.
+         * @return
+         */
         public ListBoxModel doFillKojiTaskItems(){
-            if (kojiTask == null) {
-                return new ListBoxModel(
-                        new ListBoxModel.Option("Run a new maven build", "mavenBuild", false),
-                        new ListBoxModel.Option("Download maven build", "download" , false),
-                        new ListBoxModel.Option("List latest build for package", "listLatest", false),
-                        new ListBoxModel.Option("Koji moshimoshi (validate client configuration)", "moshimoshi", true)
-                );
-
+            for (ListBoxModel.Option option : kojiTaskModel) {
+                if (option.name.equals(KojiTask.moshimoshi.name()))
+                    option.selected = kojiTask.equals(KojiTask.moshimoshi.name());
+                else if (option.name.equals(KojiTask.download.name()))
+                    option.selected = kojiTask.equals(KojiTask.download.name());
+                else if (option.name.equals(KojiTask.listLatest.name()))
+                    option.selected = kojiTask.equals(KojiTask.listLatest.name());
+                else if (option.name.equals(KojiTask.mavenBuild.name()))
+                    option.selected = kojiTask.equals(KojiTask.mavenBuild.name());
             }
-            return new ListBoxModel(
-                    new ListBoxModel.Option("Run a new maven build", "mavenBuild", kojiTask.equals("mavenBuild")),
-                    new ListBoxModel.Option("Download maven build", "download" , kojiTask.equals("download")),
-                    new ListBoxModel.Option("List latest build for package", "listLatest", kojiTask.equals("listLatest")),
-                    new ListBoxModel.Option("Koji moshimoshi (validate client configuration)", "moshimoshi", kojiTask.equals("moshimoshi"))
-            );
+
+            return kojiTaskModel;
         }
 
 
