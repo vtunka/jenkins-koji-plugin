@@ -7,7 +7,7 @@
   </parent>
 
   <artifactId>koji-plugin</artifactId>
-  <version>0.1.3</version>
+  <version>0.2-SNAPSHOT</version>
   <packaging>hpi</packaging>
   <name>Koji plugin</name>
   <description>Integrates Koji build system with Jenkins</description>
@@ -26,7 +26,7 @@
     <connection>scm:git:git://github.com/jenkinsci/koji-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/koji-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/koji-plugin</url>
-    <tag>jenkins-koji-plugin-0.1.3</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
