@@ -46,7 +46,12 @@ public class KojiLauncher {
     }
 
     void mavenBuildCommand(String options, String target, String sources) {
-        command =  new String[]{"koji", "maven-build", "-Dmaven.test.skip=true", options, target, sources};
+        String[] tmpCommand =  new String[]{"koji", "maven-build", "-Dmaven.test.skip=true", target, sources};
+        if (options.equals("")) {
+            command = tmpCommand;
+        } else {
+            command = concatenate(tmpCommand, new String[] {options});
+        }
     }
 
     void watchTaskCommand(String taskId) {
@@ -79,5 +84,14 @@ public class KojiLauncher {
         }
 
         return successfull;
+    }
+
+    public static String[] concatenate(String[] A, String[] B) {
+        int aLength = A.length;
+        int bLength = B.length;
+        String[] C = new String[aLength + bLength];
+        System.arraycopy(A, 0, C, 0, aLength);
+        System.arraycopy(B, 0, C, aLength, bLength);
+        return C;
     }
 }
