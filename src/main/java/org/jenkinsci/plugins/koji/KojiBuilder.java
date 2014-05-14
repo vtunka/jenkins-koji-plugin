@@ -126,7 +126,9 @@ public class KojiBuilder extends Builder {
             kojiRunSucceeded = getLatestBuilds(kojiPackage, kojiTarget);
         } else if (kojiTask.equals(KojiTask.moshimoshi.name())) {
             kojiLauncher.moshiMoshiCommand();
-            kojiRunSucceeded = kojiLauncher.callKoji();
+            kojiLauncher.callKoji();
+            // always return true, as moshimoshi sometimes returns non-international characters, that cannot be logged
+            kojiRunSucceeded = true;
         }
 
 //        listener.getLogger().println("\n[Koji integration] Watching task");
