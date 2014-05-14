@@ -39,9 +39,9 @@ public class XMLRPCTest {
     }
 
     private void testLogin() {
-        Map<String, ?> session = null;
+        KojiSession session = null;
         try {
-            session = koji.login();
+            session = koji.login("kojiadmin", "kojiadmin");
         } catch (XmlRpcException e) {
             e.printStackTrace();
         }

@@ -1,12 +1,16 @@
 package org.jenkinsci.plugins.koji.xmlrpc;
 
+import org.apache.xmlrpc.XmlRpcConfig;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
+import org.apache.xmlrpc.client.XmlRpcClientConfig;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -50,28 +54,31 @@ public class KojiClient {
             instance = new KojiClient(kojiInstanceURL);
         else {
             if (instance.getKojiInstanceURL() != kojiInstanceURL) {
-                instance = new KojiClient(kojiInstanceURL);
-                // TODO: won't it be more efficient to only call setServerURL?
+                instance.setServerURL(kojiInstanceURL);
             }
         }
 
         return instance;
     }
 
-    public Map<String, ?> login() throws XmlRpcException {
+    public KojiSession login(String userName, String password) throws XmlRpcException {
         List<Object> params = new ArrayList<Object>();
-        params.add("test");
-        params.add("test");
+        params.add(userName);
+        params.add(password);
 
-        Map<String, String> session = null;
+        Map<String, ?> session = null;
 
         try {
-            session = (Map<String, String>) koji.execute("login", params);
+            session = (Map<String, ?>) koji.execute("login", params);
         } catch (XmlRpcException e) {
             throw e;
         }
 
-        return session;
+        KojiSession kojiSession = new KojiSession(kojiInstanceURL, session);
+
+        setServerURL(kojiSession.getAuthenticatedHubURL());
+
+        return kojiSession;
     }
     /**
      * Gets latest builds.
@@ -268,6 +275,18 @@ public class KojiClient {
         koji.setConfig(config);
 
         return koji;
+    }
+
+    public void setServerURL(String kojiInstanceURL) {
+        XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
+        config.setEnabledForExtensions(true);
+        config.setEnabledForExceptions(true);
+        try {
+            config.setServerURL(new URL(kojiInstanceURL));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        koji.setConfig(config);
     }
 
     private void initSSL() {

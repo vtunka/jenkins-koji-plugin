@@ -103,7 +103,11 @@ public class KojiBuilder extends Builder {
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
 //        printDebugInfo();
-        init(listener);
+        try {
+            init(listener);
+        } catch (XmlRpcException e) {
+            listener.getLogger().println("\n[Koji integration] " + e.getMessage());
+        }
 
         boolean kojiRunSucceeded = false;
         KojiLauncher kojiLauncher = new KojiLauncher(build, launcher, listener);
@@ -187,9 +191,13 @@ public class KojiBuilder extends Builder {
         }
     }
 
-    private void init(BuildListener listener) {
+    private void init(BuildListener listener) throws XmlRpcException {
         this.listener = listener;
         this.koji = KojiClient.getKojiClient(getDescriptor().getKojiInstanceURL());
+
+        if (getDescriptor().getAuthentication().equals(Authentication.plain.name())) {
+            koji.login(getDescriptor().getKojiUsername(), getDescriptor().getKojiPassword());
+        }
     }
 
     private void printDebugInfo() {
