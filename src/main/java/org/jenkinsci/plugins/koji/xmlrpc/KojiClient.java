@@ -38,7 +38,7 @@ public class KojiClient {
         return kojiInstanceURL;
     }
 
-    private KojiClient(String kojiInstanceURL) {
+    private KojiClient(String kojiInstanceURL) throws MalformedURLException {
         this.kojiInstanceURL = kojiInstanceURL;
         this.koji = connect(kojiInstanceURL);
     }
@@ -48,7 +48,7 @@ public class KojiClient {
      *
      * @param kojiInstanceURL URL of remote Koji instance.
      */
-    public static KojiClient getKojiClient(String kojiInstanceURL) {
+    public static KojiClient getKojiClient(String kojiInstanceURL) throws MalformedURLException {
         if (instance == null)
             instance = new KojiClient(kojiInstanceURL);
         else {
@@ -117,11 +117,7 @@ public class KojiClient {
             buildInfo = (Map<String, String>) latestBuilds[0];
         } catch (XmlRpcException e) {
             throw e;
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
-
 
         return buildInfo;
     }
@@ -263,7 +259,7 @@ public class KojiClient {
      * @param kojiInstanceURL Address of the remote Koji server.
      * @return XMLRPC client instance.
      */
-    private XmlRpcClient connect(String kojiInstanceURL) {
+    private XmlRpcClient connect(String kojiInstanceURL) throws MalformedURLException {
         XmlRpcClient koji = new XmlRpcClient();
         koji.setTransportFactory(new XmlRpcCommonsTransportFactory(koji));
         XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
@@ -275,7 +271,7 @@ public class KojiClient {
         try {
             config.setServerURL(new URL(kojiInstanceURL));
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            throw e;
         }
 
         koji.setConfig(config);

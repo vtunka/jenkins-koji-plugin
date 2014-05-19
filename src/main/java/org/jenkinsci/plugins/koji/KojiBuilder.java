@@ -16,6 +16,7 @@ import org.kohsuke.stapler.StaplerRequest;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Map;
 
 
@@ -238,8 +239,10 @@ public class KojiBuilder extends Builder {
                 listener.getLogger().println("[Koji integration] No build with id=" + build + " found in the database.");
                 return;
             }
-            else
-                e.printStackTrace();
+            else {
+                listener.getLogger().println("[Koji integration] Error executing Koji command.");
+                listener.getLogger().println(e.getMessage());
+            }
         }
         for (Map.Entry<String, String> entry : buildInfo.entrySet()) {
             String key = entry.getKey();
@@ -256,7 +259,12 @@ public class KojiBuilder extends Builder {
      */
     private void init(BuildListener listener) throws XmlRpcException {
         this.listener = listener;
-        this.koji = KojiClient.getKojiClient(getDescriptor().getKojiInstanceURL());
+        try {
+            this.koji = KojiClient.getKojiClient(getDescriptor().getKojiInstanceURL());
+        } catch (MalformedURLException e) {
+            listener.getLogger().println("[Koji integration] Error executing Koji command.");
+            listener.getLogger().println(e.getMessage());
+        }
 
         if (getDescriptor().getAuthentication().equals(Authentication.plain.name())) {
             koji.login(getDescriptor().getKojiUsername(), getDescriptor().getKojiPassword());

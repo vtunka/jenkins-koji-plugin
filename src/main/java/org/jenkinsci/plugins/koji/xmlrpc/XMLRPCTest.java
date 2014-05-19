@@ -4,6 +4,7 @@ import org.apache.log4j.*;
 import org.apache.xmlrpc.XmlRpcException;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +35,11 @@ public class XMLRPCTest {
     private final String tag = "mead-import-maven-all";
 
     /**
+     * Logger instance
+     */
+    private Logger logger;
+
+    /**
      * As described above, this class is used for out of container testing only.
      * @param args
      */
@@ -49,7 +55,8 @@ public class XMLRPCTest {
      * Initializes the logging infrastructure and sets the desired log level.
      */
     private void initLogger() {
-        Logger logger = LogManager.getLogger(getClass());
+
+        logger = LogManager.getLogger(getClass());
         BasicConfigurator.configure(); // basic log4j configuration
         Logger.getRootLogger().setLevel(Level.DEBUG);
         FileAppender fileAppender = null;
@@ -69,11 +76,15 @@ public class XMLRPCTest {
      * @param kojiInstanceURL
      */
     public XMLRPCTest(String kojiInstanceURL) {
+        initLogger();
 
-        this.koji = KojiClient.getKojiClient(kojiInstanceURL);
+        try {
+            this.koji = KojiClient.getKojiClient(kojiInstanceURL);
+        } catch (MalformedURLException e) {
+            logger.error(e.getMessage());
+        }
         koji.setDebug(true);
 
-        initLogger();
     }
 
     /**
