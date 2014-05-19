@@ -74,8 +74,9 @@ public class KojiLauncher {
     /**
      * Construct command for Koji CLI validation.
      */
-    void moshiMoshiCommand() {
+    KojiLauncher moshiMoshiCommand() {
         command =  new String[]{"koji", "moshimoshi"};
+        return this;
     }
 
     /**
@@ -84,7 +85,7 @@ public class KojiLauncher {
      * @param target Target to which build is tagged.
      * @param sources Sources in format of git+https://[repo]#[hash]
      */
-    void mavenBuildCommand(String options, String target, String sources) {
+    KojiLauncher mavenBuildCommand(String options, String target, String sources) {
         // Tests are always skipped in Koji. Koji isn't built to act as CI or test execution environment,
         // as most executors are offline on purpose.
         String[] tmpCommand =  new String[]{"koji", "maven-build", "-Dmaven.test.skip=true", target, sources};
@@ -93,22 +94,26 @@ public class KojiLauncher {
         } else {
             command = concatenate(tmpCommand, new String[] {options});
         }
+
+        return this;
     }
 
     /**
      * Watch a Koji task.
      * @param taskId TaskId, usually a number.
      */
-    void watchTaskCommand(String taskId) {
+    KojiLauncher watchTaskCommand(String taskId) {
         command =  new String[]{"koji", "watch-task", taskId};
+        return this;
     }
 
     /**
      * Download a Koji build artifacts and logs.
      * @param kojiBuild Koji build can be either Name Version Release (NVR) or can have maven coordinates.
      */
-    void downloadCommand(String kojiBuild) {
+    KojiLauncher downloadCommand(String kojiBuild) {
         command =  new String[]{"koji", "download-build", "--type=maven", kojiBuild};
+        return this;
     }
 
     /**

@@ -160,19 +160,15 @@ public class KojiBuilder extends Builder {
 
         if (kojiTask.equals(KojiTask.mavenBuild.name())) {
             listener.getLogger().println("\n[Koji integration] Running maven build build for package " + kojiPackage + " in tag " + kojiTarget);
-            kojiLauncher.mavenBuildCommand(isScratchToString(), kojiTarget, kojiScmUrl);
-            kojiRunSucceeded = kojiLauncher.callKoji();
-
+            kojiRunSucceeded = kojiLauncher.mavenBuildCommand(isScratchToString(), kojiTarget, kojiScmUrl).callKoji();
         } else if (kojiTask.equals(KojiTask.download.name())) {
             listener.getLogger().println("\n[Koji integration] Downloading artifacts for build " + kojiBuild);
-            kojiLauncher.downloadCommand(kojiBuild);
-            kojiRunSucceeded = kojiLauncher.callKoji();
+            kojiRunSucceeded = kojiLauncher.downloadCommand(kojiBuild).callKoji();
         } else if (kojiTask.equals(KojiTask.listLatest.name())) {
             listener.getLogger().println("\n[Koji integration] Listing latest build information for package " + kojiPackage + " in tag " + kojiTarget);
             kojiRunSucceeded = getLatestBuilds(kojiPackage, kojiTarget);
         } else if (kojiTask.equals(KojiTask.moshimoshi.name())) {
-            kojiLauncher.moshiMoshiCommand();
-            kojiLauncher.callKoji();
+            kojiLauncher.moshiMoshiCommand().callKoji();
             // always return true, as moshimoshi sometimes returns non-international characters, that cannot be logged
             kojiRunSucceeded = true;
         }
