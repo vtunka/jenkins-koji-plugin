@@ -208,6 +208,7 @@ public class KojiBuilder extends Builder {
                 return false;
             }
             else {
+                listener.getLogger().println("[Koji integration] Error executing Koji command.");
                 listener.getLogger().println(e.getMessage());
                 return false;
             }
