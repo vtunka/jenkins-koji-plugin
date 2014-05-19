@@ -11,6 +11,11 @@ import org.apache.xmlrpc.client.XmlRpcTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This custom transport Factory allows for logging incoming and outgoing raw XML responses and requests.
+ *
+ * Used mainly for offline logging. Please see MyLogging utils for dependencies.
+ */
 public class MyXmlRpcCommonsTransportFactory extends
         XmlRpcCommonsTransportFactory {
 

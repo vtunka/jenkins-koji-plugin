@@ -19,8 +19,19 @@ import org.apache.commons.io.IOUtils;
 import org.apache.xmlrpc.XmlRpcException;
 import org.slf4j.Logger;
 
+/**
+ * This class was created to allow debugging of XML-RPC requests and responses, mainly outside of Jenkins environment.
+ *
+ * It requires additional dependencies to work properly, like commons httpclient, io and codec.
+ */
 public class MyLoggingUtils {
 
+    /**
+     * Logs a request ni raw XML form.
+     * @param logger Logger to be used
+     * @param requestEntity
+     * @throws XmlRpcException
+     */
     public static void logRequest(Logger logger,
                                   RequestEntity requestEntity) throws XmlRpcException {
         ByteArrayOutputStream bos = null;
@@ -36,11 +47,23 @@ public class MyLoggingUtils {
         }
     }
 
+    /**
+     * Convenience method to nicely log XML contents for request.
+     * @param logger
+     * @param content XML content to be logged.
+     */
     public static void logRequest(Logger logger, String content) {
         logger.debug("---- Request ----");
         logger.debug(toPrettyXml(logger, content));
     }
 
+    /**
+     * This method logs XML from streams and nicely formats the output.
+     * @param logger
+     * @param stream Incoming stream.
+     * @return Resulting response.
+     * @throws XmlRpcException
+     */
     public static String logResponse(Logger logger, InputStream stream)
             throws XmlRpcException {
         BufferedReader reader = null;
@@ -62,11 +85,22 @@ public class MyLoggingUtils {
         }
     }
 
+    /**
+     * Convenience method to nicely log responses.
+     * @param logger
+     * @param content String XML content to be logged.
+     */
     public static void logResponse(Logger logger, String content) {
         logger.debug("---- Response ----");
         logger.debug(toPrettyXml(logger, content));
     }
 
+    /**
+     * Reformat XML to be nicely logged.
+     * @param logger
+     * @param xml XML input
+     * @return Formatted XML.
+     */
     private static String toPrettyXml(Logger logger, String xml) {
         try {
             Transformer transformer =
