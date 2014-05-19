@@ -42,7 +42,7 @@ public class KojiBuilder extends Builder {
     private final String kojiTarget;
     private final String kojiPackage;
     private final String kojiOptions;
-    private static String kojiTask;
+    private final String kojiTask;
     private boolean kojiScratchBuild;
     private final String kojiScmUrl;
 
@@ -238,18 +238,6 @@ public class KojiBuilder extends Builder {
         private String kojiPassword;
         private String sslCertificatePath;
 
-        private transient ListBoxModel authModel = new ListBoxModel(
-                new ListBoxModel.Option("Username / Password", Authentication.plain.name()),
-                new ListBoxModel.Option("OpenSSL", Authentication.openSSL.name()),
-                new ListBoxModel.Option("Kerberos (TBD)", Authentication.kerberos.name())
-        );
-
-        private transient ListBoxModel kojiTaskModel = new ListBoxModel(
-                new ListBoxModel.Option("Koji moshimoshi (validate client configuration)", KojiTask.moshimoshi.name()),
-                new ListBoxModel.Option("Run a new maven build", KojiTask.mavenBuild.name()),
-                new ListBoxModel.Option("Download maven build", KojiTask.download.name()),
-                new ListBoxModel.Option("List latest build for package", KojiTask.listLatest.name())
-        );
 
         /**
          * In order to load the persisted global configuration, you have to
@@ -286,18 +274,26 @@ public class KojiBuilder extends Builder {
          * Fills the items for authentication for global configuration.
          * @return
          */
+        @SuppressWarnings("UnusedDeclaration")
         public ListBoxModel doFillAuthenticationItems(){
+            ListBoxModel authModel = new ListBoxModel(
+                    new ListBoxModel.Option("Username / Password", Authentication.plain.name()),
+                    new ListBoxModel.Option("OpenSSL", Authentication.openSSL.name()),
+                    new ListBoxModel.Option("Kerberos (TBD)", Authentication.kerberos.name())
+            );
+
+
             if (authentication == null) {
                 authModel.get(0).selected = true;
                 return authModel;
             }
 
             for (ListBoxModel.Option option : authModel) {
-                if (option.name.equals(Authentication.plain.name()))
+                if (option.value.equals(Authentication.plain.name()))
                     option.selected = authentication.equals(Authentication.plain.name());
-                else if (option.name.equals(Authentication.openSSL.name()))
+                else if (option.value.equals(Authentication.openSSL.name()))
                     option.selected = authentication.equals(Authentication.openSSL.name());
-                else if (option.name.equals(Authentication.kerberos.name()))
+                else if (option.value.equals(Authentication.kerberos.name()))
                     option.selected = authentication.equals(Authentication.kerberos.name());
             }
 
@@ -308,21 +304,20 @@ public class KojiBuilder extends Builder {
          * Fills the Koji task options for project configurations.
          * @return
          */
+        @SuppressWarnings("UnusedDeclaration")
         public ListBoxModel doFillKojiTaskItems(){
-            for (ListBoxModel.Option option : kojiTaskModel) {
-                if (option.name.equals(KojiTask.moshimoshi.name()))
-                    option.selected = kojiTask.equals(KojiTask.moshimoshi.name());
-                else if (option.name.equals(KojiTask.download.name()))
-                    option.selected = kojiTask.equals(KojiTask.download.name());
-                else if (option.name.equals(KojiTask.listLatest.name()))
-                    option.selected = kojiTask.equals(KojiTask.listLatest.name());
-                else if (option.name.equals(KojiTask.mavenBuild.name()))
-                    option.selected = kojiTask.equals(KojiTask.mavenBuild.name());
-            }
-
+            ListBoxModel kojiTaskModel = new ListBoxModel(
+                    new ListBoxModel.Option("Koji moshimoshi (validate client configuration)", KojiTask.moshimoshi.name()),
+                    new ListBoxModel.Option("Run a new maven build", KojiTask.mavenBuild.name()),
+                    new ListBoxModel.Option("Download maven build", KojiTask.download.name()),
+                    new ListBoxModel.Option("List latest build for package", KojiTask.listLatest.name())
+            );
             return kojiTaskModel;
         }
 
+        public static DescriptorImpl get() {
+            return Builder.all().get(DescriptorImpl.class);
+        }
 
         /**
          * This human readable name is used in the configuration screen.
