@@ -2,7 +2,6 @@ package org.jenkinsci.plugins.koji.xmlrpc;
 
 import org.apache.log4j.*;
 import org.apache.xmlrpc.XmlRpcException;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;

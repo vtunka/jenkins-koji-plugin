@@ -1,23 +1,16 @@
 package org.jenkinsci.plugins.koji.xmlrpc;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.io.StringWriter;
+import org.apache.commons.httpclient.methods.RequestEntity;
+import org.apache.commons.io.IOUtils;
+import org.apache.xmlrpc.XmlRpcException;
+import org.slf4j.Logger;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
-import org.apache.commons.httpclient.methods.RequestEntity;
-import org.apache.commons.io.IOUtils;
-import org.apache.xmlrpc.XmlRpcException;
-import org.slf4j.Logger;
+import java.io.*;
 
 /**
  * This class was created to allow debugging of XML-RPC requests and responses, mainly outside of Jenkins environment.

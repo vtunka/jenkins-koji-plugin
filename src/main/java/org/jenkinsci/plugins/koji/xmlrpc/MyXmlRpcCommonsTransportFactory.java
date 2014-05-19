@@ -1,8 +1,5 @@
 package org.jenkinsci.plugins.koji.xmlrpc;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcCommonsTransport;
@@ -10,6 +7,9 @@ import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
 import org.apache.xmlrpc.client.XmlRpcTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 /**
  * This custom transport Factory allows for logging incoming and outgoing raw XML responses and requests.
