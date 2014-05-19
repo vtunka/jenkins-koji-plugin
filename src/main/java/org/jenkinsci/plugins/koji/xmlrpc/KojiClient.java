@@ -71,11 +71,11 @@ public class KojiClient {
     }
 
     /**
-     * Login to XML-RPC service using plain authentication. This basi
-     * @param userName
-     * @param password
-     * @return
-     * @throws XmlRpcException
+     * Login to XML-RPC service using plain authentication. This authentication is the only supported via Koji XML-RPC API.
+     * @param userName Username
+     * @param password Password
+     * @return KojiSession.
+     * @throws XmlRpcException In case issue with login happens.
      */
     public KojiSession login(String userName, String password) throws XmlRpcException {
         List<Object> params = new ArrayList<Object>();

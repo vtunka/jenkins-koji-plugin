@@ -7,15 +7,41 @@ import hudson.model.BuildListener;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * This class server for invocation of the Koji CLI. This is required especially for OpenSSL and Kerberos authentication
+ * which are currently not properly supported in the Koji XML-RPC API.
+ */
 public class KojiLauncher {
 
+    /**
+     * Workspace path
+     */
     private final String workspacePath;
+    /**
+     * Concatenated command
+     */
     private String[] command;
 
+    /**
+     * Build reference taken from KojiBuilder.
+     */
     private final AbstractBuild<?,?> build;
+    /**
+     * Build listener reference taken from KojiBuilder.
+     */
     private final BuildListener listener;
+
+    /**
+     * Launcher object taking care of the actual invocation
+     */
     private Launcher launcher;
 
+    /**
+     * Initializes the base infrastructure for proper Koji CLI invocation.
+     * @param build See field reference.
+     * @param launcher See field reference.
+     * @param listener See field reference.
+     */
     public KojiLauncher(AbstractBuild<?,?> build, Launcher launcher, BuildListener listener) {
         this.build = build;
         this.listener = listener;
@@ -24,6 +50,10 @@ public class KojiLauncher {
         workspacePath = initWorkspacePath();
     }
 
+    /**
+     * Initializes the workspace path.
+     * @return Workspace path.
+     */
     private String initWorkspacePath() {
         String workspace = "";
         try {
@@ -41,11 +71,22 @@ public class KojiLauncher {
         return workspace;
     }
 
+    /**
+     * Construct command for Koji CLI validation.
+     */
     void moshiMoshiCommand() {
         command =  new String[]{"koji", "moshimoshi"};
     }
 
+    /**
+     * Construct a new maven build command.
+     * @param options Options for a build.
+     * @param target Target to which build is tagged.
+     * @param sources Sources in format of git+https://[repo]#[hash]
+     */
     void mavenBuildCommand(String options, String target, String sources) {
+        // Tests are always skipped in Koji. Koji isn't built to act as CI or test execution environment,
+        // as most executors are offline on purpose.
         String[] tmpCommand =  new String[]{"koji", "maven-build", "-Dmaven.test.skip=true", target, sources};
         if (options.equals("")) {
             command = tmpCommand;
@@ -54,14 +95,26 @@ public class KojiLauncher {
         }
     }
 
+    /**
+     * Watch a Koji task.
+     * @param taskId TaskId, usually a number.
+     */
     void watchTaskCommand(String taskId) {
         command =  new String[]{"koji", "watch-task", taskId};
     }
 
+    /**
+     * Download a Koji build artifacts and logs.
+     * @param kojiBuild Koji build can be either Name Version Release (NVR) or can have maven coordinates.
+     */
     void downloadCommand(String kojiBuild) {
         command =  new String[]{"koji", "download-build", "--type=maven", kojiBuild};
     }
 
+    /**
+     * Tries to call Koji with a given command. Be sure to call one of the *Command() method first.
+     * @return
+     */
     public boolean callKoji() {
         boolean successfull = true;
 
@@ -86,6 +139,12 @@ public class KojiLauncher {
         return successfull;
     }
 
+    /**
+     * Convenience method to concatenate two arrays.
+     * @param A First array.
+     * @param B Second array.
+     * @return Resulting concatenated array.
+     */
     public static String[] concatenate(String[] A, String[] B) {
         int aLength = A.length;
         int bLength = B.length;
