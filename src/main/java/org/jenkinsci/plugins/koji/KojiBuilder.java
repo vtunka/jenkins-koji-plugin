@@ -20,7 +20,7 @@ import java.util.Map;
 
 
 /**
- * Sample {@link Builder}.
+ * KojiBuilder is the main extension point for Koji integration with Jenkins.
  *
  * <p>
  * When the user configures the project and enables this builder,
@@ -36,19 +36,58 @@ import java.util.Map;
  *
  * @author Vaclav Tunka
  */
+@SuppressWarnings("UnusedDeclaration")
 public class KojiBuilder extends Builder {
 
+    /**
+     * Koji build ID can be Name-Version-Release (NVR) or a maven coordinate.
+     */
     private final String kojiBuild;
+    /**
+     * Koji build tag / target, a set holding builds and packages in Koji (to which builds are *tagged* into).
+     */
     private final String kojiTarget;
+    /**
+     * Koji package is a set of builds, build can belong tu multiple packages.
+     */
     private final String kojiPackage;
+    /**
+     * Additional options passed to Koji.
+     */
     private final String kojiOptions;
+    /**
+     * Koji task that is to be performed.
+     */
     private final String kojiTask;
+    /**
+     * Scratch build is a special Koji build, that does not get tagged and stored permanently in Koji.
+     * Used for debugging and testing purposes, scratch builds should never be shipped.
+     */
     private boolean kojiScratchBuild;
+    /**
+     * Koji SCM URL for e.g. git repository. Koji is somehow selective about the format, for example for proper git URL
+     * for Koji is git+https://[repo]#[commitHash] - must be readonly, https is better than http and must include commit
+     * hash as Koji never builds from moving target.
+     * Example: git+https://github.com/vtunka/buildmetadata-maven-plugin#ce68bfc08000ada70a3aa04d92d7c88271ac5b5e
+     */
     private final String kojiScmUrl;
 
     private transient BuildListener listener;
+    /**
+     * KojiClient is handling XML-RPC communication for the Koji plugin.
+     */
     private transient KojiClient koji;
 
+    /**
+     * Currently all fields are persisted in single constructor when user submits project configuration form.
+     * @param kojiBuild
+     * @param kojiTarget
+     * @param kojiPackage
+     * @param kojiOptions
+     * @param kojiTask
+     * @param kojiScratchBuild
+     * @param kojiScmUrl
+     */
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
     @SuppressWarnings("UnusedDeclaration")
@@ -100,6 +139,13 @@ public class KojiBuilder extends Builder {
         return kojiScmUrl;
     }
 
+    /**
+     * Main method for plugin execution containing all logic for BuildStep.
+     * At first init method is called providing initialization to XML-RPC and Koji-CLI
+     * integration.
+     *
+     * User selected Koji task then gets executed.
+     */
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
 //        printDebugInfo();
@@ -138,6 +184,9 @@ public class KojiBuilder extends Builder {
         return kojiRunSucceeded;
     }
 
+    /**
+     * Translate boolean to Koji CLI accepted string.
+     */
     private String isScratchToString() {
         if (kojiScratchBuild) {
             return "--scratch";
@@ -145,6 +194,12 @@ public class KojiBuilder extends Builder {
             return "";
     }
 
+    /**
+     * Fetch and print latest builds into build console.
+     * @param pkg Koji package.
+     * @param tag Koji tag.
+     * @return Run successful?
+     */
     private boolean getLatestBuilds(String pkg, String tag) {
         Map<String, String> result = null;
 
@@ -171,6 +226,10 @@ public class KojiBuilder extends Builder {
         return true;
     }
 
+    /**
+     * Fetches and prints metadata about a build.
+     * @param build Build id, can be NVR or maven coordinate. See javadoc for field kojiBuild for syntax details.
+     */
     private void getBuildInfo(String build) {
         Map<String, String> buildInfo = null;
 
@@ -193,6 +252,11 @@ public class KojiBuilder extends Builder {
         }
     }
 
+    /**
+     * Initializes the Koji XML-RPC session and other preconditions.
+     * @param listener Build listener from BuildStep.
+     * @throws XmlRpcException when Koji login fails.
+     */
     private void init(BuildListener listener) throws XmlRpcException {
         this.listener = listener;
         this.koji = KojiClient.getKojiClient(getDescriptor().getKojiInstanceURL());
@@ -202,14 +266,19 @@ public class KojiBuilder extends Builder {
         }
     }
 
+    /**
+     * For debugging purposes.
+     */
     private void printDebugInfo() {
         listener.getLogger().println("This is the selected Koji Instance: " + getDescriptor().getKojiInstanceURL());
         listener.getLogger().println("This is the selected Koji Build: " + kojiBuild);
     }
 
+    /**
+     * Gets the descriptor for this BuildStep.
+     * @return
+     */
     // Overridden for better type safety.
-    // If your plugin doesn't really define any property on Descriptor,
-    // you don't have to do this.
     @Override
     public DescriptorImpl getDescriptor() {
         return (DescriptorImpl)super.getDescriptor();
@@ -232,16 +301,32 @@ public class KojiBuilder extends Builder {
          * <p>
          * If you don't want fields to be persisted, use <tt>transient</tt>.
          */
+
+        /**
+         * Koji Instance URL, must be URL ending with "kojihub" suffix to connect to XML-RPC hub (that can run on entirely different URL),
+         * base Koji URL is not enough. For this reason users have to set full URL to hub and there is no pseudo-intelligent resolving.
+         */
         private String kojiInstanceURL;
+        /**
+         * Selected authentication, see Authentication enum.
+         */
         private String authentication;
+        /**
+         * Used only for plain username/password auth, not for any other authentication method.
+         */
         private String kojiUsername;
+        /**
+         * Same restrictions apply as for kojiUsername field.
+         */
         private String kojiPassword;
+        /**
+         * Path to SSL certificate used for Koji authentication on a  local file system.
+         */
         private String sslCertificatePath;
 
 
         /**
-         * In order to load the persisted global configuration, you have to
-         * call load() in the constructor.
+         * In order to load the persisted global configuration, method load() has to be called in the constructor.
          */
         public DescriptorImpl() {
             super(KojiBuilder.class);
@@ -265,6 +350,10 @@ public class KojiBuilder extends Builder {
             return FormValidation.ok();
         }
 
+        /**
+         * This buildstep is applicable to all project types.
+         * @return Always true.
+         */
         public boolean isApplicable(Class<? extends AbstractProject> aClass) {
             // Indicates that this builder can be used with all kinds of project types
             return true;
@@ -326,6 +415,13 @@ public class KojiBuilder extends Builder {
             return "Koji integration";
         }
 
+        /**
+         * Fetches data from Jelly views and configures instance variables for glabal Jenkins configuration.
+         * @param req Staple Request.
+         * @param formData JSON Form data.
+         * @return Successful?
+         * @throws FormException
+         */
         @Override
         public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
             // To persist global configuration information,
@@ -341,9 +437,6 @@ public class KojiBuilder extends Builder {
             return super.configure(req,formData);
         }
 
-        /**
-         * Get Koji Instance URL.
-         */
         public String getKojiInstanceURL() {
             return kojiInstanceURL;
         }
@@ -389,10 +482,24 @@ public class KojiBuilder extends Builder {
         }
     }
 
+    /**
+     * There are there authentication options currently supported by this plugin.
+     * Plain - Username / Password (has to be specifically enabled in Koji server DB). Only working method for XML-RPC authentication.
+     * OpenSSL - preffered method by Koji developers, however has broken support in XML-RPC Koji API. So far only works for
+     * Koji CLI.
+     * Kerberos - same as OpenSSL, has no support in XML-RPC API, works only for Koji CLI.
+     */
     enum Authentication {
         plain, openSSL, kerberos
     }
 
+    /**
+     * So far this plugin supports 4 basic Koji tasks supporting release process:
+     * List latest build - for a given package tagged in a [tag].
+     * Download build - downloads build's artifacts and logs for a Koji build, needs buildId.
+     * Run a new maven build - runs a new maven build in freshly provisioned clean-room Koji environment.
+     * Moshi Moshi - verifies Koji CLI configuration.
+     */
     enum KojiTask {
         mavenBuild, download, listLatest, moshimoshi
     }
