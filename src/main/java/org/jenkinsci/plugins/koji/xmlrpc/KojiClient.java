@@ -31,8 +31,17 @@ import javax.net.ssl.X509TrustManager;
  */
 public class KojiClient {
 
+    /**
+     * Internal XML-RPC client instance not exposed for direct calls. Everything needs to go through KojiClient.
+     */
     private XmlRpcClient koji;
+    /**
+     * Singleton.
+     */
     private static KojiClient instance;
+    /**
+     * Koji hub Instance URL. Must end with "kojihub" suffix or leading to other custom URL pointing directly to koji server XML-RPC hub.
+     */
     private String kojiInstanceURL;
 
     public String getKojiInstanceURL() {
@@ -45,7 +54,7 @@ public class KojiClient {
     }
 
     /**
-     * Get the KojiClient Singleton instance.
+     * Get the KojiClient Singleton instance. If user changes global config with Koji Hub URL, it's eventually modified here.
      *
      * @param kojiInstanceURL URL of remote Koji instance.
      */
@@ -61,6 +70,13 @@ public class KojiClient {
         return instance;
     }
 
+    /**
+     * Login to XML-RPC service using plain authentication. This basi
+     * @param userName
+     * @param password
+     * @return
+     * @throws XmlRpcException
+     */
     public KojiSession login(String userName, String password) throws XmlRpcException {
         List<Object> params = new ArrayList<Object>();
         params.add(userName);
